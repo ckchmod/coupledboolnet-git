@@ -33,8 +33,8 @@ class PerturbationInputVariabale:
     perturbtype = "probabilistic"           
     
     if (perturbtype == "probabilistic"):
-        booleanperturb = .0
-        commnodeprob  = .0
+        booleanperturb = .1
+        commnodeprob  = .4
 
         if (commnodeprob > 0):
             defaultnode = 0
@@ -57,7 +57,7 @@ class PerturbationInputVariabale:
                 
 class GridVariables:
     
-    numcells = 1
+    numcells = 100
     if (numcells > 1):
         
         grid = True

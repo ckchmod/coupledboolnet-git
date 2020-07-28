@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from math import ceil, sqrt
-from coupledboolnet.bnnetworks.bn import BooleanNetwork, inputtest
+from coupledboolnet.bnnetworks.bn import BooleanNetwork, inputtest, bitstoints
 from coupledboolnet.bnnetworks.ising import Ising
 from coupledboolnet.bnnetworks.bnsettings import RBNVariables, PerturbationInputVariabale, GridVariables, ImportSavedData
 from coupledboolnet.visualization.statetransitiondiagram import transitiondiagram
@@ -24,10 +25,11 @@ Simulation Parameters
 """
 
 numiter = 1
-timestep = 2**12
+timestep = 2**13
 
 
 def runsteadystateeverything():
+    
     # Check all the inputs are correctinitiall. Incomplete.
     inputtest(rbnobj, importeddata, perturbobj, gridobj, timestep)
 
@@ -43,12 +45,30 @@ def runsteadystateeverything():
         
     #     plt.subplot(ceil(sqrt(numiter)), ceil(sqrt(numiter)), i+1)
     #     statedistributionviz(rbnP.states, rbnP.n, perturbobj.booleanperturb)
-        
-
 
     rbnP = BooleanNetwork(rbnobj, perturbobj, gridobj, importeddata)
     rbnP.bool_next_all(timestep, gridobj)
     
+
+    print(rbnP.states[:,:,0])
+
+    import matplotlib 
+    fig, ax = plt.subplots()
+    #cmap = matplotlib.colors.ListedColormap([i for i in range(2**rbnP.n)])
+    
+    dt = 100
+    for t in range(timestep):
+
+        if (t % dt == 0):
+            """
+            plot every 100 timesteps
+            """
+            ax.cla()
+            states = bitstoints(rbnP.states[:,:,t]).reshape(int(np.sqrt(gridobj.numcells)), int(np.sqrt(gridobj.numcells)))
+            ax.imshow(states)
+            ax.set_title("Timestep: {}".format(t))
+            plt.pause(.1)
+
     # from numpy import save
     # save('./coupledboolnet/data.npy', rbnP.states)
 
@@ -80,19 +100,20 @@ def runsteadystateeverything():
     # plt.show()
 
 def isingcheck():
- 
     isingmodel = Ising(GridVariables, timestep)
     print(isingmodel.isingrun())
     pass
 
 def generatetissue():
-    
     pass    
     
-def main():
-    #runsteadystateeverything()
+def checktime():
     import timeit
-    print(timeit.timeit(stmt = runsteadystateeverything, number = 100))
+    print(timeit.timeit(stmt = runsteadystateeverything, number = 10))
+
+def main():
+    runsteadystateeverything()
+    #checktime()
     #isingcheck()
     
 main()

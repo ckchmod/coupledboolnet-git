@@ -17,3 +17,5 @@ High Priority:
 		8 cells
 		
     Animation of Separate Input/Output vs. Same Output
+    
+    Run on Kamiak

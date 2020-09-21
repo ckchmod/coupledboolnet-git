@@ -1,13 +1,6 @@
-## Coupled Boolean Networks
-
-#To do:
+## Coupled Boolean Networks To Do List:
 
 High Priority:
-
-1 Perturbation
-1.1 Check that the model can solve multiple number of cells
-
-2 Ising
 
 	PBN Test
 		Different Network
@@ -22,3 +15,5 @@ High Priority:
 		2 cells
 		4 cells
 		8 cells
+		
+    Animation of Separate Input/Output vs. Same Output

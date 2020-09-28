@@ -21,6 +21,7 @@ class BooleanNetwork():
         self.booleanperturbobj = perturbobj
         self.grid = gridobj
 
+
         if (gridobj.numcells == 1):
             if importobj.initstate is None:
                 self.initstate = random.randint(2, size=(self.grid.numcells, self.n), dtype=bool)
@@ -28,10 +29,32 @@ class BooleanNetwork():
                 self.initstate = importobj.initstate
         elif (gridobj.numcells > 1):
             self.initstate = random.randint(2, size=(self.grid.numcells, self.n), dtype=bool)
-            a = np.zeros((self.grid.numcells,))
-            a[::2] = True
-            a[1::2] = False
-            self.initstate[:, 0] = a
+            self.gridsize = int(np.sqrt(gridobj.numcells))
+            if (gridobj.initconfig == "antiferromagnetic"):
+
+                initconfig = np.zeros((self.gridsize, self.gridsize), dtype=int)
+                initconfig[1::2, ::2] = 1
+                initconfig[::2, 1::2] = 1
+                self.initconfig = initconfig.reshape(gridobj.numcells)
+
+            elif (gridobj.initconfig == "ferromagnetic"):
+                initconfig = np.ones((self.gridsize, self.gridsize), dtype=int)
+                self.initconfig = initconfig.reshape(gridobj.numcells)
+
+            elif (gridobj.initconfig == "disordered"):
+                initconfig = np.random.choice([0, 1], size=(self.gridsize, self.gridsize))
+                self.initconfig = initconfig.reshape(gridobj.numcells)
+            else:
+                assert (gridobj.initconfig == "antiferromagnetic"), "initconfig not supported"
+                pass
+            self.initconfig = self.initconfig.astype(bool)
+            self.initstate[:,0] = self.initconfig
+
+            # self.initstate = random.randint(2, size=(self.grid.numcells, self.n), dtype=bool)
+            # a = np.zeros((self.grid.numcells,))
+            # a[::2] = True
+            # a[1::2] = False
+            # self.initstate[:, 0] = a
 
         if importobj.ttable is None:
             # The bias p needs to be fixed
@@ -126,8 +149,14 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
 
-                        nodestates = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
-                        newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c)
+                        # inputoutput same nodei
+
+                        if(self.booleanperturbobj.defaultnode == 0):
+                            nodestates = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
+                        else:
+                            # inputoutput different node
+                            nodestates = self.states[:, self.booleanperturbobj.outputnode, t].reshape(dimsize, dimsize)
+                        newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.J)
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 
     def boolean_next_state(self, currentime, cellid):

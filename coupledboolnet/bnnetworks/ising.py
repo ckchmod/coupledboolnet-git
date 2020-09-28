@@ -20,8 +20,7 @@ class Ising():
         self.h = isingvariables.h
         self.T_c = isingvariables.T_c
         self.hf = 0  # to be modified.
-        if (isingvariables.dispising == True):
-            self.dT = isingvariables.dT
+        self.dT = isingvariables.dT
 
         if (initconfig is None):
 
@@ -48,9 +47,7 @@ class Ising():
         self.numsteps = numsteps
         self.kb = 8.617 * (10 ** -5)  # eV/K
 
-        self.dispising = isingvariables.dispising
-        if (self.dispising is True):
-            self.dT = isingvariables.dT
+        self.dT = isingvariables.dT
 
     def isingsinglestep(self):
         mc_i = np.random.randint(self.initconfig.shape[0])
@@ -72,14 +69,6 @@ class Ising():
 
     def isingrunall(self):
 
-        # Energy_0 = np.zeros((self.gridsize, self.gridsize), dtype = bool)
-
-        # for i in range(self.initconfig.shape[0]):
-        #     for j in range(self.initconfig.shape[1]):
-        #         N, S, W, E = boundaries(i,j,self.initconfig)
-        #         Energy_0[i,j] =  -1 * self.initconfig[i,j] * \
-        #             (self.initconfig[S,j] + self.initconfig[N,j] + self.initconfig[i,E] + self.initconfig[i,W]);
-
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots()
@@ -90,17 +79,19 @@ class Ising():
             mc_j = np.random.randint(self.initconfig.shape[1])
             N, S, W, E = boundaries(mc_i, mc_j, self.initconfig)
 
-            # dE = energycomputation(self.initconfig[mc_i, mc_j], N, S, W, E, self.J, self.h, self.hf)
-            s = self.J * self.initconfig[mc_i, mc_j]
+            s = self.initconfig[mc_i, mc_j]
             nb = (self.initconfig[S, mc_j] + self.initconfig[N, mc_j] + self.initconfig[mc_i, E] + self.initconfig[
                 mc_i, W])
 
-            dE = -2 * s * nb
+            NN_new = -self.J * -self.initconfig[mc_i,mc_j] * nb
+            NN_old = -self.J * self.initconfig[mc_i,mc_j] * nb
+
+            dE = NN_new - NN_old
 
             if dE < 0:
-                s *= -1
+                s = -s
             elif np.random.rand() < np.exp((-dE) / self.T_c):
-                s *= -1
+                s = -s
             self.initconfig[mc_i, mc_j] = s
 
             if (t % self.dT == 0):
@@ -110,28 +101,29 @@ class Ising():
                 plt.pause(0.1)
 
 
-def isingsingle(initconfig, J, T_c):
+def isingsingle(initconfig, J, T_c, h):
     initconfig = np.where(initconfig == 0, -1, initconfig)
 
     mc_i = np.random.randint(initconfig.shape[0])
     mc_j = np.random.randint(initconfig.shape[1])
     N, S, W, E = boundaries(mc_i, mc_j, initconfig)
 
-    # dE = energycomputation(self.initconfig[mc_i, mc_j], N, S, W, E, self.J, self.h, self.hf)
-    s = J * initconfig[mc_i, mc_j]
+    s = initconfig[mc_i, mc_j]
     nb = (initconfig[S, mc_j] + initconfig[N, mc_j] + initconfig[mc_i, E] + initconfig[mc_i, W])
 
-    dE = -2 * s * nb
+    NN_new = -J * -initconfig[mc_i, mc_j] * nb
+    NN_old = -J * initconfig[mc_i, mc_j] * nb
+    # -2 h (f2_f1)
+    dE = NN_new - NN_old
 
     if dE < 0:
-        s *= -1
+        s = -s
     elif np.random.rand() < np.exp((-dE) / T_c):
-        s *= -1
+        s = -s
     initconfig[mc_i, mc_j] = s
     initconfig = np.where(initconfig == -1, False, initconfig)
     initconfig = initconfig.astype(bool)
     return (initconfig)
-
 
 def flipspin(spin):
     if (spin == 1):
@@ -173,6 +165,6 @@ def energycomputation(s_i, N_S_W_E, J, h_interac, h_f):
     # (N_S_W_E[0] + N_S_W_E_temp[1] + N_S_W_E_temp[2] + N_S_W_E_temp[3]))
     # 2*s*nb
 
-    energy = -2 * s_i * (N_S_W_E_temp[0] + N_S_W_E_temp[1] + N_S_W_E_temp[2] + N_S_W_E_temp[3])
+    energy = -2 * s_i * (N_S_W_E_temp[0] + N_S_W_E_temp[1] + N_S_W_E_temp[2] + N_S_W_E_temp[3]) - 2*h_f
     return energy
 

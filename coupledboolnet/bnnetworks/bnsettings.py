@@ -39,8 +39,8 @@ class PerturbationInputVariabale:
         "perturbation type needs to be one of probabilistic, periodic, stochastic, none"
 
     if (perturbtype == "probabilistic"):
-        booleanperturb = .12
-        commnodeprob = .12
+        booleanperturb = 0
+        commnodeprob = 0
 
         if (commnodeprob > 0):
             defaultnode = 0
@@ -59,13 +59,16 @@ class PerturbationInputVariabale:
         stochastictype = "Ising"
         booleanperturb = .01
         defaultnode = 0
+        outputnode = -1
 
     elif(perturbtype == "none"):
         booleanperturb = 0
         commnodeprob = 0
 
 class GridVariables:
-    numcells = 4
+    numcells = 100
+    dT = 10 # Timestep delta for visualizations
+
     if (numcells > 1):
 
         grid = True
@@ -87,15 +90,11 @@ class GridVariables:
 
             J = 1  # Antiferromagnetic
             h = 0
-            T_c = .0001  # 2.269 is critical
+            T_c = 0.01  # 2.269 is critical
             kb = 8.617 * (10 ** -5)  # eV/K
 
             initconfig = "disordered"
             assert (initconfig in ["antiferromagnetic", "ferromagnetic", "disordered"])
-
-            dispising = True
-            if (dispising is True):
-                dT = 1  # Show every 100 timesteps
 
         elif (comm == "linearthreshold"):
             linearthreshold = 2

@@ -7,8 +7,7 @@ from coupledboolnet.bnnetworks.ising import Ising
 from coupledboolnet.bnnetworks.bnsettings import RBNVariables, PerturbationInputVariabale, GridVariables, ImportSavedData
 from coupledboolnet.visualization.steadystates import *
 """
-Set all network Parameters
-
+Run RBNp
 @author: chrisk
 """
 rbnobj = RBNVariables()
@@ -21,13 +20,12 @@ numiter = 1
 timestep = 2**10
 
 def runsteadystateeverything():
-
+    #inputtest(rbnobj,importeddata, perturbobj, gridobj, timestep)
     rbnP = BooleanNetwork(rbnobj, perturbobj, gridobj, importeddata)
     rbnP.bool_next_all(timestep, gridobj)
     # save('data', rbnP.states)
-    # statedistributionviz(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.booleanperturb)
-    # showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, timestep, gridobj.dT)
-    # fig = plt.figure(1)
+    #statedistributionviz(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.booleanperturb)
+    showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode , gridobj.dT)
     # transitiondiagram(rbnP.state_transition())
 
 def isingcheck():
@@ -47,8 +45,8 @@ def checktime():
 
 def main():
     runsteadystateeverything()
-    # checktime()
-    # isingcheck()
+    #checktime()
+    #isingcheck()
     print("Simulation Finished.")
 
 main()

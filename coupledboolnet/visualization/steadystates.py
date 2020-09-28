@@ -18,7 +18,8 @@ def transitiondiagram(transitionstates):
 
     G = nx.DiGraph()
     G.add_edges_from(transitionstates)
-    nx.draw(G, with_labels=True)
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True)
     plt.show()
 
 def stateevolutionviz(states):
@@ -61,26 +62,35 @@ def statedistributionviz(numcells, states, numgenes, stringinfo):
         fig = px.bar(x= binnum, y = ssdistribution)
         fig.show()
 
-def showanimation(numcells, states, numgenes, timestep, dt):
-    fig, ax = plt.subplots()
+def showanimation(numcells, states, numgenes, defaultnode, dt):
+    fig, (ax1, ax2) = plt.subplots(1, 2)
     cmap = matplotlib.colors.ListedColormap([i for i in range(2**numgenes)])
 
     ims = []
-    for t in range(timestep):
+    numcellline = int(np.sqrt(numcells))
 
-       if (t % dt == 0):
+    if (len(states.shape) == 3):
+        for t in range(states.shape[2]):
+           if (t % dt == 0):
 
-           ax.cla()
-           states = bitstoints(states[:, :, t]).reshape(int(np.sqrt(numcells)),
-                                                             int(np.sqrt(numcells)))
-           ax.imshow(states, animated=True)
-           ax.set_title("Timestep: {}".format(t))
-           im = ax.imshow(states, animated=True)
-           ims.append([im])
-           plt.pause(.1)
+               ax1.cla()
+               tempstates = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
+               ax1.imshow(tempstates, animated=True)
+               ax1.set_title("Overall Network Timestep: {}".format(t))
+               im1 = ax1.imshow(tempstates, animated=True)
 
-           ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
-                                           repeat_delay=1000)
+               ax2.cla()
+               tempstates = states[:, defaultnode, t].reshape(numcellline, numcellline)
+               ax2.imshow(tempstates, animated=True)
+               ax2.set_title("Communicating Node Timestep: {}".format(t))
+               im2 = ax1.imshow(tempstates, animated=True)
 
-    ani.save('ising-model.mp4')
+               ims.append([im1, im2])
+               print(t)
+               print(tempstates)
+
+               plt.pause(.2)
+
+               ani = animation.ArtistAnimation(fig, ims, blit=False)
+               #ani.save('ising-model.mp4')
     pass

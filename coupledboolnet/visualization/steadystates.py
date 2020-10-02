@@ -35,7 +35,7 @@ def stateevolutionviz(states):
     plt.ylabel('Decimal Encoding of Binary States')
     plt.show()
     
-def statedistributionviz(numcells, states, numgenes, stringinfo):
+def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
     print("\n --- Steady-state Distribution of States --- ")
     print("numcells: ", numcells)
 
@@ -54,43 +54,49 @@ def statedistributionviz(numcells, states, numgenes, stringinfo):
                     go.Bar(x = binnum, y = ssdistribution, marker_color='rgb(0, 0, 0)' ),
                     row = i, col = j
                 )
+                fig.update_yaxes(type="log")
                 counter = counter + 1
-        fig.update_layout(title_text="Tissue of cell steady-state distributions", showlegend=False)
+        fig.update_layout(title_text="Tissue of cell steady-state distributions. T_c={}, h={}".format(gridobj.T_c, gridobj.h),
+                          showlegend=False)
         fig.show()
     else:
         ssdistribution, binnum = steadystates(states, numgenes)
         fig = px.bar(x= binnum, y = ssdistribution)
         fig.show()
 
-def showanimation(numcells, states, numgenes, defaultnode, dt):
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+def showanimation(numcells, states, numgenes, defaultnode, gridobj):
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11,6))
     cmap = matplotlib.colors.ListedColormap([i for i in range(2**numgenes)])
 
+    plt.title("J={}".format(gridobj.J))
     ims = []
     numcellline = int(np.sqrt(numcells))
 
     if (len(states.shape) == 3):
         for t in range(states.shape[2]):
-           if (t % dt == 0):
+            if (t % gridobj.dT== 0):
 
-               ax1.cla()
-               tempstates = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
-               ax1.imshow(tempstates, animated=True)
-               ax1.set_title("Overall Network Timestep: {}".format(t))
-               im1 = ax1.imshow(tempstates, animated=True)
+                ax1.cla()
+                tempstates1 = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
+                ax1.imshow(tempstates1, animated=True)
+                ax1.set_title("Overall Network: t={}".format(t))
+                im1 = ax1.imshow(tempstates1, animated=True)
 
-               ax2.cla()
-               tempstates = states[:, defaultnode, t].reshape(numcellline, numcellline)
-               ax2.imshow(tempstates, animated=True)
-               ax2.set_title("Communicating Node Timestep: {}".format(t))
-               im2 = ax1.imshow(tempstates, animated=True)
+                ax2.cla()
+                tempstates2 = states[:, defaultnode, t].reshape(numcellline, numcellline)
+                ax2.imshow(tempstates2, animated=True)
+                ax2.set_title("Comm Node: T_c={}".format(gridobj.T_c))
+                im2 = ax2.imshow(tempstates2, animated=True)
 
-               ims.append([im1, im2])
-               print(t)
-               print(tempstates)
+                ax3.cla()
+                tempstates3 = bitstoints(states[:, 1:, t]).reshape(numcellline, numcellline)
+                ax3.imshow(tempstates3, animated=True)
+                ax3.set_title("Non-comm Network: h={}".format(gridobj.h))
+                im3 = ax3.imshow(tempstates3, animated=True)
 
-               plt.pause(.2)
+                ims.append([im1, im2, im3])
 
-               ani = animation.ArtistAnimation(fig, ims, blit=False)
-               #ani.save('ising-model.mp4')
-    pass
+                plt.pause(.01)
+                ani = animation.ArtistAnimation(fig, ims, blit=False)
+
+            #ani.save('ising-model.mp4')

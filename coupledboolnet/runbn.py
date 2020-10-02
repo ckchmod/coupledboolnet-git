@@ -24,8 +24,8 @@ def runsteadystateeverything():
     rbnP = BooleanNetwork(rbnobj, perturbobj, gridobj, importeddata)
     rbnP.bool_next_all(timestep, gridobj)
     # save('data', rbnP.states)
-    #statedistributionviz(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.booleanperturb)
-    showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode , gridobj.dT)
+    showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode , gridobj)
+    statedistributionviz(rbnP.grid.numcells, rbnP.states, rbnP.n, perturbobj.booleanperturb, gridobj)
     # transitiondiagram(rbnP.state_transition())
 
 def isingcheck():

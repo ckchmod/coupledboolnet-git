@@ -101,8 +101,9 @@ class Ising():
                 plt.pause(0.1)
 
 
-def isingsingle(initconfig, J, T_c, h):
+def isingsingle(initconfig, J, T_c, h, f_NN):
     initconfig = np.where(initconfig == 0, -1, initconfig)
+    f_NN = np.where(f_NN == 0, -1, f_NN)
 
     mc_i = np.random.randint(initconfig.shape[0])
     mc_j = np.random.randint(initconfig.shape[1])
@@ -111,9 +112,15 @@ def isingsingle(initconfig, J, T_c, h):
     s = initconfig[mc_i, mc_j]
     nb = (initconfig[S, mc_j] + initconfig[N, mc_j] + initconfig[mc_i, E] + initconfig[mc_i, W])
 
-    NN_new = -J * -initconfig[mc_i, mc_j] * nb
-    NN_old = -J * initconfig[mc_i, mc_j] * nb
-    # -2 h (f2_f1)
+    NN_new = -J * -initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]*s
+    NN_old = -J * initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]*s
+
+    #NN_new = -J * -initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
+    #NN_old = -J * initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
+
+    #NN_new = -J * -initconfig[mc_i, mc_j] * nb - h
+    #NN_old = -J * initconfig[mc_i, mc_j] * nb - h
+
     dE = NN_new - NN_old
 
     if dE < 0:

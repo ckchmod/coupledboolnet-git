@@ -8,8 +8,9 @@ import numpy as np
 
 class ImportSavedData:
     path = os.getcwd()
-    networkpath = path + "/data/example1/"
-    importsaveddata = False
+    networkpath = path + "/data/example_diversifying/"
+    #networkpath = path + "/data/example1/"
+    importsaveddata = True
 
     if importsaveddata is True:
         ttable = np.loadtxt(networkpath + "tt.txt", dtype=int)
@@ -29,7 +30,7 @@ class RBNVariables:
     """
     n = 10
     k = 2
-    p = .5
+    p = .55
 
 
 class PerturbationInputVariabale:
@@ -57,7 +58,7 @@ class PerturbationInputVariabale:
 
     elif (perturbtype == "stochastic"):
         stochastictype = "Ising"
-        booleanperturb = .01
+        booleanperturb = .02
         defaultnode = 0
         outputnode = -1
 
@@ -66,7 +67,7 @@ class PerturbationInputVariabale:
         commnodeprob = 0
 
 class GridVariables:
-    numcells = 100
+    numcells = 14**2
     dT = 10 # Timestep delta for visualizations
 
     if (numcells > 1):
@@ -76,21 +77,20 @@ class GridVariables:
         comm = "ising"
 
         assert (comm in ["ising"]), \
-            "communication type needs to be one of ising, ..."
+            "communication type needs to be one of Ising, ..."
 
         if (comm == "ising"):
             """
-
             PARAMETERS: 
             ___________
-            J : theexchange energy between the spins 
+            J : the exchange energy between the spins 
             h : The magnetic moment is given by µ (external magnetic field)
-            T_c : tempreature (J/k_B)
+            T_c : temperature (J/k_B)
             """
 
             J = 1  # Antiferromagnetic
             h = 0
-            T_c = 0.01  # 2.269 is critical
+            T_c = 2.2  # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 
             initconfig = "disordered"

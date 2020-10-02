@@ -149,14 +149,17 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
 
-                        # inputoutput same nodei
+                        # inputoutput same node
 
                         if(self.booleanperturbobj.defaultnode == 0):
-                            nodestates = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
+                            nodestates = self.states[:, self.booleanperturbobj.defaultnode, t-1].reshape(dimsize, dimsize)
+                            f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
                         else:
                             # inputoutput different node
-                            nodestates = self.states[:, self.booleanperturbobj.outputnode, t].reshape(dimsize, dimsize)
-                        newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.J)
+                            nodestates = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
+                            f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
+
+                        newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 
     def boolean_next_state(self, currentime, cellid):

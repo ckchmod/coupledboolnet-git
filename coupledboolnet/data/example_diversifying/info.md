@@ -1,0 +1,1 @@
+Network of diversifying network 288 from previous work.

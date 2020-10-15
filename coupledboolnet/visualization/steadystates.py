@@ -1,7 +1,8 @@
 """
 Steady-state Distribution Visualizations
 """
-from coupledboolnet.bnnetworks.bn import bitstoints, bittoint ,steadystates
+from coupledboolnet.bnnetworks.bn import bitstoints,steadystates
+from coupledboolnet.bnnetworks.bnstatistics import steadystatesrobust
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -49,7 +50,7 @@ def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
         for i in range(1, tile+1):
             for j in range(1, tile+1):
 
-                ssdistribution, binnum = steadystates(np.transpose(states[counter, :, :]),numgenes)
+                ssdistribution, binnum = steadystatesrobust(np.transpose(states[counter, :, :]))
                 fig.add_trace(
                     go.Bar(x = binnum, y = ssdistribution, marker_color='rgb(0, 0, 0)' ),
                     row = i, col = j
@@ -60,12 +61,12 @@ def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
                           showlegend=False)
         fig.show()
     else:
-        ssdistribution, binnum = steadystates(states, numgenes)
+        ssdistribution, binnum = steadystatesrobust(states)
         fig = px.bar(x= binnum, y = ssdistribution)
         fig.show()
 
 def showanimation(numcells, states, numgenes, defaultnode, gridobj):
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(11,6))
+    fig, (ax1, ax2, ax3) = plt.subplots(2, 2, figsize=(11,6))
     cmap = matplotlib.colors.ListedColormap([i for i in range(2**numgenes)])
 
     plt.title("J={}".format(gridobj.J))
@@ -94,7 +95,14 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
                 ax3.set_title("Non-comm Network: h={}".format(gridobj.h))
                 im3 = ax3.imshow(tempstates3, animated=True)
 
-                ims.append([im1, im2, im3])
+                ax4.cla()
+                states[:,:,:t+1]
+                tempstates4 = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
+                ax4.imshow(tempstates4, animated=True)
+                ax4.set_title("Average Network")
+                im4 = ax4.imshow(tempstates3, animated=True)
+
+                ims.append([im1, im2, im3, im4])
 
                 plt.pause(.01)
                 ani = animation.ArtistAnimation(fig, ims, blit=False)

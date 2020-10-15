@@ -34,14 +34,14 @@ class RBNVariables:
 
 
 class PerturbationInputVariabale:
-    perturbtype = "stochastic"
+    perturbtype = "probabilistic"
 
     assert (perturbtype in ["probabilistic", "periodic", "stochastic", "none"]), \
         "perturbation type needs to be one of probabilistic, periodic, stochastic, none"
 
     if (perturbtype == "probabilistic"):
-        booleanperturb = 0
-        commnodeprob = 0
+        booleanperturb = 0.2
+        commnodeprob = 0.0
 
         if (commnodeprob > 0):
             defaultnode = 0
@@ -67,7 +67,7 @@ class PerturbationInputVariabale:
         commnodeprob = 0
 
 class GridVariables:
-    numcells = 14**2
+    numcells = 4**2
     dT = 10 # Timestep delta for visualizations
 
     if (numcells > 1):
@@ -88,8 +88,8 @@ class GridVariables:
             T_c : temperature (J/k_B)
             """
 
-            J = 1  # Antiferromagnetic
-            h = 0
+            J = -1 # Antiferromagnetic
+            h = 10
             T_c = 2.2  # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 

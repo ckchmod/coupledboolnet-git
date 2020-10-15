@@ -20,4 +20,8 @@ High Priority:
     
     Animation of Separate Input/Output vs. Same Output
     
+    Animation with average states 
+    
+    Create a statistics measure class
+    
     Run on Kamiak

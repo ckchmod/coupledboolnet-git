@@ -346,11 +346,14 @@ def bittoint(state):
         num = num + state[len(state) - i] * 2 ** (i - 1)
     return (num)
 
-
 def bitstoints(states):
     bitints = 2 ** np.arange(states.shape[1])[::-1]
     return (states.dot(bitints))
 
+def bitstointsrobust(states):
+    # if len(states.shape[2]) == 3:
+    bitints = 2 ** np.arange(states.shape[0])[::-1]
+    return (bitints.dot(states))
 
 def steadystates(states, genes):
     states = bitstoints(states)

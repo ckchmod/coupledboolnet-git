@@ -1,13 +1,11 @@
-import numpy as np
-import timeit
-import os
+import timeit, os
+import pandas as pd, numpy as np, matplotlib.pyplot as plt, pickle as pkl
 from coupledboolnet.bnnetworks.bn import BooleanNetwork, inputtest
 from coupledboolnet.bnnetworks.ising import Ising
 from coupledboolnet.bnnetworks.bnsettings import RBNVariables, PerturbationInputVariabale, GridVariables, ImportSavedData
 from coupledboolnet.bnnetworks.bnstatistics import steadystatesrobust
 from coupledboolnet.visualization.steadystates import *
 from coupledboolnet.bnnetworks.bnstatistics import kldpairwise, lyapunovexp
-import pandas as pd
 """
 Run RBNp
 @author: chrisk
@@ -23,7 +21,7 @@ timestep = 2**10
 datasave = True
 
 WORKING_PATH = os.getcwd()
-SAVE_PATH = WORKING_PATH + "/data/output_dat"
+SAVE_PATH = WORKING_PATH + "/data/output_data"
 
 def runsteadystateeverything():
 
@@ -38,36 +36,30 @@ def runsteadystateeverything():
         steady, bins = steadystatesrobust(rbnP.states)
 
         kldmatrix = kldpairwise(steady)
+        #viewkldbar(kldmatrix)
 
+        # need to load up df here
         if datasave is True:
 
-            diversity_threshold = np.mean(kldmatrix)
+            mean_KLD = np.mean(kldmatrix)
+            dataCol = ["indexcount", "simcount", "k", "p","Lyapunov", "meanKLD", "medianKLD",
+                       "varKLD", "t_final", "J", "h", "T_c"] #Turn this into pandas dataframe
+            dfsave = pd.DataFrame(columns=dataCol)
+            rowdf = pd.DataFrame([[indexcount, simcount, rbnP.k, rbnP.p, lyapunovexp(rbnP.k, rbnP.p), mean_KLD,
+                       np.median(kldmatrix), np.var(kldmatrix), timestep, gridobj.J, gridobj.h, gridobj.T_c]],
+                                 columns=dataCol)
 
-            dataCol = ["indexCount", "simcount", "k", "p","Lyapunov", "meanKLD", "medianKLD",
-                       "varKLD", "t_final", "J", "h", "T_c"]
-            dataRow = np.zeros((len(dataCol),1))
-            lastRow = dataRow.shape[0]
-            dataRow[lastRow, 0] = indexcount
-            dataRow[lastRow, 1] = simcount
-            dataRow[lastRow, 2] = rbnP.k
-            dataRow[lastRow, 3] = rbnP.p
-            dataRow[lastRow, 4] = lyapunovexp(rbnP.k,rbnP.p)
-            dataRow[lastRow, 5] = diversity_threshold
-            dataRow[lastRow, 6] = np.median(kldmatrix)
-            dataRow[lastRow, 7] = np.var(kldmatrix)
-            dataRow[lastRow, 8] = timestep
-            dataRow[lastRow, 9] = gridobj.J
-            dataRow[lastRow, 10] = gridobj.h
-            dataRow[lastRow, 11] = gridobj.T_c
 
-            if (diversity_threshold > 1):
+            dfsave = dfsave.append(rowdf, ignore_index= True)
+            dataname = "data.pkl"
+            datarowname = os.path.join(SAVE_PATH, dataname)
+            dfsave.to_pickle(datarowname)
+
+            if (mean_KLD > gridobj.kldthreshold):
                 objname = str(indexcount) + "_" + str(simcount) + "_" + str(rbnP.k) + "_" + str(rbnP.p) + "_" + \
-                           str(gridobj.h) + "_" + str(gridobj.T_c)+ ".npy"
-                dataname = "data.npy"
+                           str(gridobj.h) + "_" + str(gridobj.T_c)+ ".pkl"
                 objfilename = os.path.join(SAVE_PATH, objname)
-                datarowname = os.path.join(SAVE_PATH, dataname)
-                np.save(objfilename, rbnP)
-                np.save(datarowname, dataRow)
+                pkl.dump(rbnP, open(objfilename, "wb"))
 
     #####     Visualizations
     # showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode , gridobj)
@@ -76,7 +68,7 @@ def runsteadystateeverything():
 
 def isingcheck():
     """
-    TBD
+    Check all the variables are correct
     """
     isingmodel = Ising(GridVariables, timestep)
     print(isingmodel.isingrunall())
@@ -84,7 +76,7 @@ def isingcheck():
 
 def checktime():
     """
-    Just benchmark for running code
+    Benchmark time for running code
     """
     print(timeit.timeit(stmt=runsteadystateeverything, number=2))
 

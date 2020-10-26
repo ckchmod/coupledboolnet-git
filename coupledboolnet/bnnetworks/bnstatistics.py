@@ -27,10 +27,10 @@ def steadystatesrobust(states):
 
         return (ssd, bins)
 
-def KLD(p,q):
+def KLDold(p,q):
     return np.sum(np.where(p != 0, p * np.log(p / q), 0))
 
-def KLDtest(P,Q):
+def KLDcompute(P,Q):
     temp = np.multiply(P, np.log(np.divide(P,Q)))
 
     temp[np.isnan(temp)] = 0
@@ -52,7 +52,7 @@ def kldpairwise(ssD):
     for i in range(len(KLDMatrix)):
         P = ssD[pairwise[i, 0],:]
         Q = ssD[pairwise[i, 1],:]
-        KLDMatrix[i] = .5 * (KLDtest(P, Q) + KLDtest(Q, P))
+        KLDMatrix[i] = .5 * (KLDcompute(P, Q) + KLDcompute(Q, P))
 
     return(KLDMatrix)
 

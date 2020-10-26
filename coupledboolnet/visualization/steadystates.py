@@ -108,3 +108,8 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
                 ani = animation.ArtistAnimation(fig, ims, blit=False)
 
             #ani.save('ising-model.mp4')
+
+def viewkldbar(kldmatrix):
+    plt.bar(range(len(kldmatrix)), kldmatrix)
+    plt.title('Pair-wise Kullback-Divergence of tissue network')
+    plt.show()

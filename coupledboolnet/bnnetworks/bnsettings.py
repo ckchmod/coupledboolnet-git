@@ -90,8 +90,8 @@ class GridVariables:
             """
 
             J = -1 # Antiferromagnetic
-            h = 10
-            T_c = 2.2  # 2.269 is critical   `
+            h = 0
+            T_c = 0.1 # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 
             initconfig = "disordered"

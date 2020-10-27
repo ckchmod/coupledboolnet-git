@@ -16,12 +16,6 @@ High Priority:
 		4 cells
 		8 cells
 		
-    Finish interaciton ``h''
-    
-    Animation of Separate Input/Output vs. Same Output
-    
-    Animation with average states 
-    
-    Create a statistics measure class
-    
+    Come back and double check interaciton ``h''
+     
     Run on Kamiak

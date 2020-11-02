@@ -19,13 +19,18 @@ def steadystatesrobust(states):
         genes = states.shape[1]
         size = states.shape[2]
         bins = np.array([i for i in range(2 ** genes)])
-        ssd = np.zeros((numcells, len(bins)), dtype=float)
+        dectemp = np.zeros((numcells, size), dtype=int)
+        ssd = np.zeros((numcells, len(bins)))
 
         bitints = 2 ** np.arange(genes)[::-1]
-        for n in range (states.shape[0]):
-            statestemp = bitints.dot(states[n,:,:])
-            ssd[n, :] = np.array([sum(statestemp == i) for i in range(2 ** genes)]) / size
 
+        for n in range(states.shape[0]):
+            dectemp[n,:] = np.array(bitints.dot(states[n,:,:]))
+
+        for i in range(numcells):
+            for j in range(dectemp.shape[1]):
+                ssd[i, dectemp[i,j]] = ssd[i, dectemp[i,j]] + 1
+        ssd = ssd/size
         return (ssd, bins)
 
 def KLDold(p,q):

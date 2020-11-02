@@ -18,4 +18,8 @@ High Priority:
 		
     Come back and double check interaciton ``h''
      
-    Run on Kamiak
+    Run on Kamiak: Done
+    
+    Visualization script written
+    
+    Run multiple tissues now against the order parameter    

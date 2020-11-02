@@ -1,6 +1,7 @@
 from coupledboolnet import runbn
+import sys
 
 if __name__ == '__main__':
     
-    runbn.run()
+    runbn.main(sys.argv[1])
    

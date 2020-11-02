@@ -8,9 +8,9 @@ import numpy as np
 
 class ImportSavedData:
     path = os.getcwd()
-    networkpath = path + "/data/example_diversifying/"
+    networkpath = path + "/coupledboolnet/data/example_diversifying/"
     #networkpath = path + "/data/example1/"
-    importsaveddata = True
+    importsaveddata = False
 
     if importsaveddata is True:
         ttable = np.loadtxt(networkpath + "tt.txt", dtype=int)
@@ -34,7 +34,7 @@ class RBNVariables:
 
 
 class PerturbationInputVariabale:
-    perturbtype = "probabilistic"
+    perturbtype = "stochastic"
 
     assert (perturbtype in ["probabilistic", "periodic", "stochastic", "none"]), \
         "perturbation type needs to be one of probabilistic, periodic, stochastic, none"
@@ -67,7 +67,7 @@ class PerturbationInputVariabale:
         commnodeprob = 0
 
 class GridVariables:
-    numcells = 4**2
+    numcells = 10**2
     dT = 10 # Timestep delta for visualizations
     kldthreshold = 1
 

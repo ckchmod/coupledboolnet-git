@@ -66,7 +66,7 @@ def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
         fig.show()
 
 def showanimation(numcells, states, numgenes, defaultnode, gridobj):
-    fig, (ax1, ax2, ax3) = plt.subplots(2, 2, figsize=(11,6))
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(11,6))
     cmap = matplotlib.colors.ListedColormap([i for i in range(2**numgenes)])
 
     plt.title("J={}".format(gridobj.J))
@@ -96,7 +96,7 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
                 im3 = ax3.imshow(tempstates3, animated=True)
 
                 ax4.cla()
-                states[:,:,:t+1]
+                #states[:,:,:t+1]
                 tempstates4 = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
                 ax4.imshow(tempstates4, animated=True)
                 ax4.set_title("Average Network")

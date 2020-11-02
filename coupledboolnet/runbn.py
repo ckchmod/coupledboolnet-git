@@ -1,4 +1,4 @@
-import os, warnings
+import os, warnings, time
 import pandas as pd, numpy as np, matplotlib.pyplot as plt, pickle as pkl
 from coupledboolnet.bnnetworks.bn import BooleanNetwork, inputtest
 from coupledboolnet.bnnetworks.ising import Ising
@@ -11,24 +11,26 @@ Run RBNp
 @author: chrisk
 """
 
-def run_multi_sim(rbnobj, perturbobj, gridobj, importeddata, timestep, datasave, showviz):
+def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, datasave, showviz):
     """
     Run Multi-Sim
     """
     if datasave is True:
         WORKING_PATH = os.getcwd()
-        SAVE_PATH = WORKING_PATH + "/data/output_data"
-        datafilename = "data.pkl"
+        SAVE_PATH = WORKING_PATH + "/coupledboolnet/data/output_data"
+        datafilename = "data" + str(sys_arg) + ".pkl"
         DATANAME = os.path.join(SAVE_PATH, datafilename)
 
     indexcount = 0
     simcount = 1
-    k_range = np.linspace(1, 10, 2)
-    p_range = np.linspace(0.01, 0.99, 1)
-    h_range = np.linspace(0, 4, 1)
-    T_c_range = np.linspace(0, 1, 2)
+    sys_num = int(sys_arg)
+    inc = 2
+    k_range = np.linspace(2, 3, 2, dtype=int)
+    p_range = np.linspace(0.55, 0.69, 2)
+    h_range = np.linspace( sys_num - 1 + 0.1, sys_num + 0.1, 10)
+    T_c_range = np.linspace( sys_num - 1 + 0.1, sys_num + 0.1, 10)
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-               "varKLD", "t_final", "J", "h", "T_c"]  # Turn this into pandas dataframe
+               "varKLD", "t_final", "J", "h", "T_c"]
     dfsave = pd.DataFrame(columns=data_col)
 
     for kk in k_range:
@@ -45,7 +47,9 @@ def run_multi_sim(rbnobj, perturbobj, gridobj, importeddata, timestep, datasave,
                         rbnP = BooleanNetwork(rbnobj, perturbobj, gridobj, importeddata)
                         rbnP.bool_next_all(timestep, gridobj)
 
+                        start_time = time.time()
                         steady, bins = steadystatesrobust(rbnP.states)
+                        print("bn execution: --- %s seconds ---" % (time.time() - start_time))
 
                         kldmatrix = kldpairwise(steady)
                         mean_KLD = np.mean(kldmatrix)
@@ -55,10 +59,11 @@ def run_multi_sim(rbnobj, perturbobj, gridobj, importeddata, timestep, datasave,
                                                gridobj.T_c]],
                                              columns=data_col)
                         dfsave = dfsave.append(rowdf, ignore_index=True)
-                        print("indexcount: " + str(indexcount) + " k: " + str(kk) + " p: " + str(pp) + " h: " + str(hh) + " T_c: " + str(tc))
+                        print("indexcount: " + str(indexcount) + " k: " + str(kk) + " p: " + str(pp) + " h: " + str(hh) + " T_c: " + str(tc) + " mean_KLD: " + str(mean_KLD))
+
                         # need to load up df here
                         if (datasave is True and (mean_KLD > gridobj.kldthreshold)):
-                                objname = str(indexcount) + "_" + str(simcount) + "_" + str(rbnP.k) + "_" + str(rbnP.p) + "_" + \
+                                objname = "s" + str(sys_arg) + "_" + str(indexcount) + "_" + str(simcount) + "_" + str(rbnP.k) + "_" + str(rbnP.p) + "_" + \
                                            str(gridobj.h) + "_" + str(gridobj.T_c)+ ".pkl"
                                 objfilename = os.path.join(SAVE_PATH, objname)
                                 pkl.dump(rbnP, open(objfilename, "wb"))
@@ -81,7 +86,9 @@ def isingcheck(timestep):
     print(isingmodel.isingrunall())
     pass
 
-def main():
+def main(sys_arg):
+
+    print("Simulation Started.")
 
     # Global network parameters
     rbnobj = RBNVariables()
@@ -90,16 +97,16 @@ def main():
     importeddata = ImportSavedData()
 
     # Simulation Parameters
-    timestep = 2 ** 10
+    timestep = 5000
     datasave = True
     showviz = False
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
-    run_multi_sim(rbnobj, perturbobj, gridobj, importeddata, timestep, datasave, showviz)
+    run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, datasave, showviz)
     #isingcheck(timestep)
     print("Simulation Finished.")
 
-main()
+#main()
 
 
 

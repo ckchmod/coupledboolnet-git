@@ -1,3 +1,5 @@
 .*
 .spyproject/config
+./coupledboolnet/data/output_data
+./coupledboolnet/data/example_diversifying
 __pyache__

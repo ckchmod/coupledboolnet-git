@@ -3,7 +3,7 @@ import scipy.io
 statetransitiontomatlab = rbnP.state_transition()
 scipy.io.savemat('./coupledboolnet/MATLAB_TESTING/test.mat', {'allstates':rbnP.states , 'statetransition': statetransitiontomatlab})
 
-Visualize Probabilistic Boolean Network
+#Visualize Probabilistic Boolean Network
 
 fig = plt.figure(0)
 plt.subplot(ceil(sqrt(numiter)), ceil(sqrt(numiter)), 1)

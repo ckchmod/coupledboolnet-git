@@ -151,7 +151,7 @@ class BooleanNetwork():
 
                         # inputoutput same node
 
-                        if(self.booleanperturbobj.defaultnode == 0):
+                        if(self.booleanperturbobj.defaultnode == self.booleanperturbobj.outputnode):
                             nodestates = self.states[:, self.booleanperturbobj.defaultnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
                         else:

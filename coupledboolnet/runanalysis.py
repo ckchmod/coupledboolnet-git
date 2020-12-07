@@ -156,7 +156,7 @@ def main():
     TISSUE_PATH02 = SAVE_PATH + "/multi_tissue_02"
     TISSUE_PATH04 = SAVE_PATH + "/multi_tissue_04"
     TISSUE_PATH08 = SAVE_PATH + "/multi_tissue_08"
-    TISSUE_PATH16 = SAVE_PATH + "/multi_tissue_16"
+    #TISSUE_PATH16 = SAVE_PATH + "/multi_tissue_16"
 
     T10, h10 = vizsims10by10(DIVERSIFYING_PATH, CUM_PATH)
     T02, h02 = vizsimstissues(TISSUE_PATH02, 2)

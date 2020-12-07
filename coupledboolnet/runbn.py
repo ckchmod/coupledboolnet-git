@@ -64,7 +64,7 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
                         # need to load up df here
                         if (datasave is True and (mean_KLD > gridobj.kldthreshold)):
                                 objname = "s" + str(sys_arg) + "_" + str(indexcount) + "_" + str(simcount) + "_" + str(rbnP.k) + "_" + str(rbnP.p) + "_" + \
-                                           str(gridobj.h) + "_" + str(gridobj.T_c)+ ".pkl"
+                                           str(round(gridobj.h,2)) + "_" + str(round(gridobj.T_c,2))+ ".pkl"
                                 objfilename = os.path.join(SAVE_PATH, objname)
                                 pkl.dump(rbnP, open(objfilename, "wb"))
                         indexcount = indexcount + 1

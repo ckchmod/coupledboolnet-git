@@ -10,8 +10,9 @@ from scipy.optimize import curve_fit
 import statsmodels.api as sm
 import seaborn as sns
 
-def viz_animation(DIVERSIFYING_PATH):
-    ANI_PATH = DIVERSIFYING_PATH + "/9_1_2_0.55_0.1_1.1.pkl"
+def viz_animation(DIVERSIFYING_PATH, NAME):
+    ANI_PATH = DIVERSIFYING_PATH + "/" + NAME
+    #ANI_PATH = DIVERSIFYING_PATH + "/9_1_2_0.55_0.1_1.1.pkl"
     file = open(ANI_PATH, 'rb')
     rbnP = pkl.load(file)
     file.close()
@@ -282,7 +283,12 @@ def main():
 
     plt.show()
 
-main()
+def main2():
+    WORKING_PATH = os.getcwd()
+    SAVE_PATH = WORKING_PATH + "/data/output_data"
+    viz_animation(SAVE_PATH, "s2_0_1_2_0.55_0.1_0.01.pkl")
+
+main2()
 
 
 # Question: What kind of analyses can be done on top of this?

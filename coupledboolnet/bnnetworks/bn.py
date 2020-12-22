@@ -3,9 +3,8 @@ Boolean Network Class
 """
 
 import numpy as np
-from coupledboolnet.bnnetworks.ising import isingsingle
+from coupledboolnet.bnnetworks.ising import isingsingle, isingsinglefastmetropolis
 from numpy import random
-from coupledboolnet.bnnetworks.ising import Ising
 
 class BooleanNetwork():
 
@@ -149,8 +148,7 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
 
-                        # inputoutput same node
-
+                        # inputoutput same node (default)
                         if(self.booleanperturbobj.defaultnode == self.booleanperturbobj.outputnode):
                             nodestates = self.states[:, self.booleanperturbobj.defaultnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
@@ -159,7 +157,9 @@ class BooleanNetwork():
                             nodestates = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
 
-                        newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+                        #newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+                        newnodestates = isingsinglefastmetropolis(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 
     def boolean_next_state(self, currentime, cellid):

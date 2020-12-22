@@ -69,7 +69,7 @@ class PerturbationInputVariabale:
 class GridVariables:
     numcells = 10**2
     dT = 10 # Timestep delta for visualizations
-    kldthreshold = 1
+    kldthreshold = 1.0
 
     if (numcells > 1):
 

@@ -118,9 +118,6 @@ def isingsingle(initconfig, J, T_c, h, f_NN):
     #NN_new = -J * -initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
     #NN_old = -J * initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
 
-    #NN_new = -J * -initconfig[mc_i, mc_j] * nb - h
-    #NN_old = -J * initconfig[mc_i, mc_j] * nb - h
-
     dE = NN_new - NN_old
 
     if dE < 0:
@@ -128,6 +125,44 @@ def isingsingle(initconfig, J, T_c, h, f_NN):
     elif np.random.rand() < np.exp((-dE) / T_c):
         s = -s
     initconfig[mc_i, mc_j] = s
+    initconfig = np.where(initconfig == -1, False, initconfig)
+    initconfig = initconfig.astype(bool)
+    return (initconfig)
+
+
+def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
+    initconfig = np.where(initconfig == 0, -1, initconfig)
+    f_NN = np.where(f_NN == 0, -1, f_NN)
+
+    M = initconfig.shape[0]
+    N = initconfig.shape[1]
+
+    def energycomputation(i,j,initconfig, f_NN):
+        N, S, W, E = boundaries(i, j, initconfig)
+
+        s = initconfig[i, j]
+        nb = (initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W])
+
+        #NN_new = -J * -initconfig[i, j] * nb - h * f_NN[i, j] * s
+        #NN_old = -J * initconfig[i, j] * nb - h * f_NN[i, j] * s
+
+        NN_new = J * s * nb + h * f_NN[i,j] * s
+        NN_old = -J * s * nb - h * f_NN[i, j] * s
+
+        dE = NN_new - NN_old
+
+        if dE < 0:
+            s = -s
+        elif np.random.rand() < np.exp((-dE) / T_c):
+            s = -s
+        initconfig[i, j] = s
+
+        return(initconfig)
+
+    for i in range(M):
+        for j in range(N):
+            initconfig = energycomputation(i, j, initconfig, f_NN)
+
     initconfig = np.where(initconfig == -1, False, initconfig)
     initconfig = initconfig.astype(bool)
     return (initconfig)

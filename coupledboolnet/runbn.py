@@ -21,23 +21,50 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
         datafilename = "data" + str(sys_arg) + ".pkl"
         DATANAME = os.path.join(SAVE_PATH, datafilename)
 
+    # List Parameters
     indexcount = 0
-    simcount = 1
     sys_num = int(sys_arg)
-    inc = 2
-    k_range = np.linspace(2, 3, 2, dtype=int)
-    p_range = np.linspace(0.55, 0.69, 2)
-    h_range = np.linspace( sys_num - 1 + 0.1, sys_num + 0.1, 10)
-    T_c_range = np.linspace( sys_num - 1 + 0.1, sys_num + 0.1, 10)
+    k_range = np.linspace(sys_num, sys_num, 1, dtype=int)
+    p_range = np.round(np.linspace(0.55, 0.69, 2), 2)
+    T_c_range = np.round(np.linspace(0.1, 5, 2), 2)
+    h_range = np.round(np.linspace(0.1, 5, 2), 2)
+    simcount =np.linspace(1,1,1, dtype=int)
+
+    # Simulation Begins
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-               "varKLD", "t_final", "J", "h", "T_c"]
+                "varKLD", "t_final", "J", "T_c", "h"]
     dfsave = pd.DataFrame(columns=data_col)
 
-    for kk in k_range:
-        for pp in p_range:
-            for hh in h_range:
-                for tc in T_c_range:
-                    for i in range(simcount):
+    # Check to see if the items are in
+    path_exists = os.path.exists(DATANAME)
+
+    if (path_exists is True):
+        file = open(DATANAME, 'rb')
+        dfsave = pkl.load(file)
+        file.close()
+
+        kk_index = np.where(k_range == dfsave["k"].iloc[-1])[0][0]
+        pp_index = np.where(p_range == dfsave["p"].iloc[-1])[0][0]
+        tc_index = np.where(T_c_range == dfsave["T_c"].iloc[-1])[0][0]
+        hh_index = np.where(h_range == dfsave["h"].iloc[-1])[0][0]
+        sc_index = np.where(simcount == dfsave["simcount"].iloc[-1])[0][0]
+        indexcount = dfsave["indexcount"].iloc[-1]
+        print(" --- Restarting from Checkpoint ---- ")
+        print(str(kk_index) + "_" + str(pp_index) + "_" + str(tc_index) + "_"
+              + str(hh_index) + "_" + str(sc_index))
+    else:
+        kk_index = 0
+        pp_index = 0
+        tc_index = 0
+        hh_index = 0
+        sc_index = 0
+        indexcount = 0
+
+    for kk in k_range[kk_index:]:
+        for pp in p_range[pp_index:]:
+            for tc in T_c_range[tc_index:]:
+                for hh in h_range[hh_index:]:
+                    for sc in simcount[sc_index:]:
                         # inputtest(rbnobj,importeddata, perturbobj, gridobj, timestep)
 
                         rbnobj.k = kk
@@ -52,25 +79,35 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
                         print("bn execution: --- %s seconds ---" % (time.time() - start_time))
 
                         kldmatrix = kldpairwise(steady)
-                        mean_KLD = np.mean(kldmatrix)
+                        lyap = np.round(lyapunovexp(rbnP.k, rbnP.p),5)
+                        mean_KLD = np.round(np.mean(kldmatrix), 5)
+                        med_KLD = np.round(np.median(kldmatrix), 5)
+                        var_kld = np.round(np.var(kldmatrix), 5)
 
-                        rowdf = pd.DataFrame([[indexcount, simcount, rbnP.k, rbnP.p, lyapunovexp(rbnP.k, rbnP.p), mean_KLD,
-                                               np.median(kldmatrix), np.var(kldmatrix), timestep, gridobj.J, gridobj.h,
-                                               gridobj.T_c]],
+                        rowdf = pd.DataFrame([[indexcount, sc, rbnP.k, rbnP.p, lyap, mean_KLD,
+                                               med_KLD, var_kld, timestep, gridobj.J, gridobj.T_c, gridobj.h]],
                                              columns=data_col)
+
                         dfsave = dfsave.append(rowdf, ignore_index=True)
-                        print("indexcount: " + str(indexcount) + " k: " + str(kk) + " p: " + str(pp) + " h: " + str(hh) + " T_c: " + str(tc) + " mean_KLD: " + str(mean_KLD))
+                        print("ic: " + str(indexcount) + " sc: " + str(sc) + " k: " + str(kk) + " p: " + str(pp)  +
+                              " T_c: " + str(tc) + " h: " + str(hh) + " mean_KLD: " + str(mean_KLD))
 
                         # need to load up df here
                         if (datasave is True and (mean_KLD > gridobj.kldthreshold)):
-                                objname = "s" + str(sys_arg) + "_" + str(indexcount) + "_" + str(simcount) + "_" + str(rbnP.k) + "_" + str(rbnP.p) + "_" + \
-                                           str(round(gridobj.h,2)) + "_" + str(round(gridobj.T_c,2))+ ".pkl"
-                                objfilename = os.path.join(SAVE_PATH, objname)
-                                pkl.dump(rbnP, open(objfilename, "wb"))
+                            objname = "s" + str(sys_num) + "_" + str(indexcount) + "_" + str(sc) + "_" + str(rbnP.k) + \
+                                      "_" + str(rbnP.p) + "_" + str(tc) + "_" + str(hh) + ".pkl"
+                            objfilename = os.path.join(SAVE_PATH, objname)
+                            pkl.dump(rbnP, open(objfilename, "wb"))
+
                         indexcount = indexcount + 1
 
-    if datasave is True:
-        dfsave.to_pickle(DATANAME)
+                        if datasave is True:
+                            dfsave.to_pickle(DATANAME)
+                    sc_index = 0
+                hh_index = 0
+            tc_index = 0
+        pp_index = 0
+    kk_index = 0
 
     if showviz is True:
         showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode , gridobj)
@@ -97,7 +134,7 @@ def main(sys_arg):
     importeddata = ImportSavedData()
 
     # Simulation Parameters
-    timestep = 5000
+    timestep = 12800
     datasave = True
     showviz = False
 

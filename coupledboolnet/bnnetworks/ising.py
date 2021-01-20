@@ -129,6 +129,35 @@ def isingsingle(initconfig, J, T_c, h, f_NN):
     initconfig = initconfig.astype(bool)
     return (initconfig)
 
+def energycomputation(i, j, initconfig, f_NN, J, T_c, h):
+
+    ##########
+    #N, S, W, E = boundaries(i, j, initconfig)
+
+    #s = initconfig[i, j] # time t
+    #f_NN is the state of the interacting node at time t-1
+    #nb = (initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W])
+
+    #NN_new = -J * -initconfig[i, j] * nb - h * f_NN[i, j] * s
+    #NN_old = -J * initconfig[i, j] * nb - h * f_NN[i, j] * s
+
+    # current model
+    N, S, W, E = boundaries(i, j, f_NN )
+    s = f_NN[i,j]
+    nb = f_NN[S, j] + f_NN[N, j] + f_NN[i, E] + f_NN[i, W]
+
+    NN_new = J * s * nb + h * initconfig[i, j] * s
+    NN_old = -J * s * nb - h * initconfig[i,j] * s
+
+    dE = NN_new - NN_old
+
+    if dE < 0:
+        s = -s
+    elif np.random.rand() < np.exp((-dE) / T_c):
+        s = -s
+    initconfig[i, j] = s
+
+    return initconfig
 
 def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
     initconfig = np.where(initconfig == 0, -1, initconfig)
@@ -137,35 +166,14 @@ def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
     M = initconfig.shape[0]
     N = initconfig.shape[1]
 
-    def energycomputation(i,j,initconfig, f_NN):
-        N, S, W, E = boundaries(i, j, initconfig)
-
-        s = initconfig[i, j]
-        nb = (initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W])
-
-        #NN_new = -J * -initconfig[i, j] * nb - h * f_NN[i, j] * s
-        #NN_old = -J * initconfig[i, j] * nb - h * f_NN[i, j] * s
-
-        NN_new = J * s * nb + h * f_NN[i,j] * s
-        NN_old = -J * s * nb - h * f_NN[i, j] * s
-
-        dE = NN_new - NN_old
-
-        if dE < 0:
-            s = -s
-        elif np.random.rand() < np.exp((-dE) / T_c):
-            s = -s
-        initconfig[i, j] = s
-
-        return(initconfig)
-
     for i in range(M):
         for j in range(N):
-            initconfig = energycomputation(i, j, initconfig, f_NN)
+            initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
 
     initconfig = np.where(initconfig == -1, False, initconfig)
     initconfig = initconfig.astype(bool)
-    return (initconfig)
+
+    return initconfig
 
 def flipspin(spin):
     if (spin == 1):
@@ -196,7 +204,7 @@ def boundaries(i, j, matrix):
     return (N, S, W, E)
 
 
-def energycomputation(s_i, N_S_W_E, J, h_interac, h_f):
+def energycomputationold(s_i, N_S_W_E, J, h_interac, h_f):
     N_S_W_E_temp = N_S_W_E;
     s_i_temp = s_i;
     h_f_temp = h_f;

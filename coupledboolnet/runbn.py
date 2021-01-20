@@ -17,13 +17,14 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
     """
     if datasave is True:
         WORKING_PATH = os.getcwd()
-        SAVE_PATH = WORKING_PATH + "/coupledboolnet/data/output_data"
+        SAVE_PATH = WORKING_PATH + "/data/output_data/10_by_10_1_20"
         datafilename = "data" + str(sys_arg) + ".pkl"
         DATANAME = os.path.join(SAVE_PATH, datafilename)
 
     # List Parameters
     indexcount = 0
-    sys_num = int(sys_arg)
+    #sys_num = int(sys_arg)
+    sys_num = 2
     k_range = np.linspace(sys_num, sys_num, 1, dtype=int)
     p_range = np.round(np.linspace(0.55, 0.69, 2), 2)
     T_c_range = np.round(np.linspace(0.1, 5, 2), 2)

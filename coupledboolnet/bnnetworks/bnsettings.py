@@ -60,7 +60,7 @@ class PerturbationInputVariabale:
         stochastictype = "Ising"
         booleanperturb = .02
         defaultnode = 0
-        outputnode = -1
+        outputnode = 0
 
     elif(perturbtype == "none"):
         booleanperturb = 0
@@ -69,7 +69,8 @@ class PerturbationInputVariabale:
 class GridVariables:
     numcells = 10**2
     dT = 10 # Timestep delta for visualizations
-    kldthreshold = 1.0
+    #kldthreshold = 1.0
+    kldthreshold=0.01
 
     if (numcells > 1):
 

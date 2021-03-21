@@ -17,7 +17,7 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
     """
     if datasave is True:
         WORKING_PATH = os.getcwd()
-        SAVE_PATH = WORKING_PATH + "/data/output_data/10_by_10_1_20"
+        SAVE_PATH = WORKING_PATH + "/data/output_data/tbd"
         datafilename = "data" + str(sys_arg) + ".pkl"
         DATANAME = os.path.join(SAVE_PATH, datafilename)
 
@@ -26,9 +26,9 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
     #sys_num = int(sys_arg)
     sys_num = 2
     k_range = np.linspace(sys_num, sys_num, 1, dtype=int)
-    p_range = np.round(np.linspace(0.55, 0.69, 2), 2)
-    T_c_range = np.round(np.linspace(0.1, 5, 2), 2)
-    h_range = np.round(np.linspace(0.1, 5, 2), 2)
+    p_range = np.round(np.linspace(0.5, 0.5, 1), 2)
+    T_c_range = np.round(np.linspace(6.1, 6.1, 1), 2)
+    h_range = np.round(np.linspace(6, 6, 1), 2)
     simcount =np.linspace(1,1,1, dtype=int)
 
     # Simulation Begins
@@ -101,7 +101,7 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
                             pkl.dump(rbnP, open(objfilename, "wb"))
 
                         indexcount = indexcount + 1
-
+                        print(mean_KLD)
                         if datasave is True:
                             dfsave.to_pickle(DATANAME)
                     sc_index = 0

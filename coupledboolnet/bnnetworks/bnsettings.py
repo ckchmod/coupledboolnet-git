@@ -8,9 +8,10 @@ import numpy as np
 
 class ImportSavedData:
     path = os.getcwd()
-    networkpath = path + "/coupledboolnet/data/example_diversifying/"
+    networkpath = path + "/data/example_diversifying/"
     #networkpath = path + "/data/example1/"
     importsaveddata = False
+    importsaveddata = True
 
     if importsaveddata is True:
         ttable = np.loadtxt(networkpath + "tt.txt", dtype=int)
@@ -69,8 +70,7 @@ class PerturbationInputVariabale:
 class GridVariables:
     numcells = 10**2
     dT = 10 # Timestep delta for visualizations
-    #kldthreshold = 1.0
-    kldthreshold=0.01
+    kldthreshold = 0
 
     if (numcells > 1):
 
@@ -91,11 +91,11 @@ class GridVariables:
             """
 
             J = -1 # Antiferromagnetic
-            h = 0
-            T_c = 0.1 # 2.269 is critical   `
+            h = 2
+            T_c = 3 # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 
-            initconfig = "disordered"
+            initconfig = "antiferromagnetic"
             assert (initconfig in ["antiferromagnetic", "ferromagnetic", "disordered"])
 
         elif (comm == "linearthreshold"):

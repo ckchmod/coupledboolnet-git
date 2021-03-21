@@ -148,17 +148,19 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
 
-                        # inputoutput same node (default)
+                        # inputoutput same node (default) (IF ELSE STATEMENT NEEDS TO BE DELETED)
                         if(self.booleanperturbobj.defaultnode == self.booleanperturbobj.outputnode):
-                            nodestates = self.states[:, self.booleanperturbobj.defaultnode, t-1].reshape(dimsize, dimsize)
+                            initconfig = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
                         else:
                             # inputoutput different node
-                            nodestates = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
+                            initconfig = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
 
-                        #newnodestates = isingsingle(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
-                        newnodestates = isingsinglefastmetropolis(nodestates, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+                        #newnodestates = isingsingle(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+                        # nodestates is t-1 interacting node
+                        # f_NN is t interacting node
+                        newnodestates = isingsinglefastmetropolis(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
 
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 

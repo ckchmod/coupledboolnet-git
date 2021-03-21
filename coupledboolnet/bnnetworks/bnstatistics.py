@@ -10,7 +10,10 @@ def steadystatesrobust(states):
         genes = states.shape[1]
         states = bitstoints(states)
         bins = np.array([i for i in range(2 ** genes)])
-        ssd = np.array([sum(states == i) for i in range(2 ** genes)]) / states.size
+        #test
+        #ssd = np.array([sum(states == i) for i in range(2 ** genes)]) / states.size
+        #test
+        ssd, bins = np.histogram(states, bins=bins)
 
         return (ssd, bins)
 

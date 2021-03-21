@@ -141,10 +141,17 @@ def energycomputation(i, j, initconfig, f_NN, J, T_c, h):
     #NN_new = -J * -initconfig[i, j] * nb - h * f_NN[i, j] * s
     #NN_old = -J * initconfig[i, j] * nb - h * f_NN[i, j] * s
 
+    #NN_new = -self.J * -self.initconfig[mc_i, mc_j] * nb
+    #NN_old = -self.J * self.initconfig[mc_i, mc_j] * nb
+
     # current model
-    N, S, W, E = boundaries(i, j, f_NN )
-    s = f_NN[i,j]
-    nb = f_NN[S, j] + f_NN[N, j] + f_NN[i, E] + f_NN[i, W]
+    #N, S, W, E = boundaries(i, j, f_NN )
+    #s = f_NN[i,j]
+    #nb = f_NN[S, j] + f_NN[N, j] + f_NN[i, E] + f_NN[i, W]
+
+    N, S, W, E = boundaries(i, j, initconfig )
+    s = f_NN[i,j] #singrunall
+    nb = initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W]
 
     NN_new = J * s * nb + h * initconfig[i, j] * s
     NN_old = -J * s * nb - h * initconfig[i,j] * s
@@ -160,14 +167,17 @@ def energycomputation(i, j, initconfig, f_NN, J, T_c, h):
     return initconfig
 
 def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
+    # current model initconfig (t-1 interacting node)
+    # f_nn (t current node)
     initconfig = np.where(initconfig == 0, -1, initconfig)
     f_NN = np.where(f_NN == 0, -1, f_NN)
 
-    M = initconfig.shape[0]
-    N = initconfig.shape[1]
+    M = f_NN.shape[0]
+    N = f_NN.shape[1]
 
     for i in range(M):
         for j in range(N):
+            #initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
             initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
 
     initconfig = np.where(initconfig == -1, False, initconfig)

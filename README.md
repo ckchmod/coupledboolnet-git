@@ -5,7 +5,7 @@
 
 ## How to use
 
-Users supply connectivty value ($k$) from command line:
+Users supply connectivty value `k` from command line:
 
     python -m coupleboolnet [k-value]
 
@@ -16,7 +16,7 @@ Otherwise, the default setting is a tissue of 10-by-10 cells with 10-genes with 
 
 ## Contents 
 
-- Edit `bnsettings.py` for extensive paramter of control with boolean networks. Options include perturbation, temperature $T$, interaction strength $h$. 
+- Edit `bnsettings.py` for extensive paramter of control with boolean networks. Options include perturbation, temperature `T`, interaction strength `h`. 
 
 - Run methods from `runanalysis2.py` separately for visualization tools of the simulation outcomes.
 

@@ -5,7 +5,7 @@ from coupledboolnet.bnnetworks.ising import Ising
 from coupledboolnet.bnnetworks.bnsettings import RBNVariables, PerturbationInputVariabale, GridVariables, ImportSavedData
 from coupledboolnet.bnnetworks.bnstatistics import steadystatesrobust
 from coupledboolnet.visualization.steadystates import *
-from coupledboolnet.bnnetworks.bnstatistics import kldpairwise, lyapunovexp
+from coupledboolnet.bnnetworks.bnstatistics import kldpairwise, lyapunovexp, magnetization, hellingerpairwise
 """
 Run RBNp
 @author: chrisk
@@ -23,17 +23,17 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
 
     # List Parameters
     indexcount = 0
-    #sys_num = int(sys_arg)
-    sys_num = 2
+    sys_num = int(sys_arg)
+    #sys_num = 3
     k_range = np.linspace(sys_num, sys_num, 1, dtype=int)
-    p_range = np.round(np.linspace(0.5, 0.5, 1), 2)
-    T_c_range = np.round(np.linspace(6.1, 6.1, 1), 2)
-    h_range = np.round(np.linspace(6, 6, 1), 2)
+    p_range = np.round(np.linspace(0.8, 0.8, 1), 2)
+    T_c_range = np.round(np.linspace(6.000, 6.000, 1), 2)
+    h_range = np.round(np.linspace(6.000, 6.000, 1), 2)
     simcount =np.linspace(1,1,1, dtype=int)
 
     # Simulation Begins
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-                "varKLD", "t_final", "J", "T_c", "h"]
+                "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
     dfsave = pd.DataFrame(columns=data_col)
 
     # Check to see if the items are in
@@ -84,14 +84,18 @@ def run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, 
                         mean_KLD = np.round(np.mean(kldmatrix), 5)
                         med_KLD = np.round(np.median(kldmatrix), 5)
                         var_kld = np.round(np.var(kldmatrix), 5)
+                        mag = np.round(magnetization(rbnP.states), 5)
+                        hellmatrix = hellingerpairwise(steady)
+                        mean_hell = np.round(np.mean(hellmatrix), 5)
 
                         rowdf = pd.DataFrame([[indexcount, sc, rbnP.k, rbnP.p, lyap, mean_KLD,
-                                               med_KLD, var_kld, timestep, gridobj.J, gridobj.T_c, gridobj.h]],
+                                               med_KLD, var_kld, timestep, gridobj.J, gridobj.T_c, gridobj.h, mag, mean_hell]],
                                              columns=data_col)
 
                         dfsave = dfsave.append(rowdf, ignore_index=True)
                         print("ic: " + str(indexcount) + " sc: " + str(sc) + " k: " + str(kk) + " p: " + str(pp)  +
-                              " T_c: " + str(tc) + " h: " + str(hh) + " mean_KLD: " + str(mean_KLD))
+                              " T_c: " + str(tc) + " h: " + str(hh) + " mean_KLD: " + str(mean_KLD) +
+                              " mean_hell: " + str(mean_hell) )
 
                         # need to load up df here
                         if (datasave is True and (mean_KLD > gridobj.kldthreshold)):
@@ -135,7 +139,7 @@ def main(sys_arg):
     importeddata = ImportSavedData()
 
     # Simulation Parameters
-    timestep = 12800
+    timestep = 10000
     datasave = True
     showviz = False
 

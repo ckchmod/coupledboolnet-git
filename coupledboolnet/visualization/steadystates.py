@@ -13,6 +13,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from math import ceil, sqrt
+from numpy import linalg as LA
 
 def transitiondiagram(transitionstates):
     print("\n --- Transition Diagrm of States --- ")
@@ -55,7 +56,7 @@ def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
                     go.Bar(x = binnum, y = ssdistribution, marker_color='rgb(0, 0, 0)' ),
                     row = i, col = j
                 )
-                fig.update_yaxes(type="log")
+                #fig.update_yaxes(type="log")
                 counter = counter + 1
         fig.update_layout(title_text="Tissue of cell steady-state distributions. T_c={}, h={}".format(gridobj.T_c, gridobj.h),
                           showlegend=False)
@@ -65,10 +66,38 @@ def statedistributionviz(numcells, states, numgenes, stringinfo, gridobj):
         fig = px.bar(x= binnum, y = ssdistribution)
         fig.show()
 
+def pcolortest(numcells, states, numgenes):
+    numcellline = int(np.sqrt(numcells))
+
+    newmatrix = np.zeros((numcells, states.shape[2]))
+    for t in range(states.shape[2]):
+        tempstates1 = bitstoints(states[:,:,t]).reshape(numcellline * numcellline)/(2**numgenes)
+        newmatrix[:,t] = tempstates1
+
+
+    newvec = np.zeros(newmatrix.shape[1]-newmatrix.shape[0])
+    for t in range(newmatrix.shape[1]-newmatrix.shape[0]):
+        newvec[t] = LA.norm(newmatrix[:,t:t+newmatrix.shape[0]].shape)
+
+    print(newvec)
+    fig, ax0 = plt.subplots(1,1)
+    c=ax0.pcolor(newmatrix[:, :20], vmin=0, vmax=1)
+    ax0.set_title('s3_0_1_3_0.8_6.0_6.0')
+
+    #plt.plot(newvec)
+    #plt.title('Frobenius norm 100x100 of s3_0_1_3_0.8_5.0_3.0')
+    #plt.xlabel('time snapshots')
+    #plt.ylabel('Matrix norm')
+    plt.show()
+
+    return(newmatrix)
+
+
 def showanimation(numcells, states, numgenes, defaultnode, gridobj):
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(11,6))
     cmap = matplotlib.colors.ListedColormap([i for i in range(2**numgenes)])
 
+    gridobj.dT = 10
     plt.title("J={}".format(gridobj.J))
     ims = []
     numcellline = int(np.sqrt(numcells))

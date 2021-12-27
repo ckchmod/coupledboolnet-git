@@ -23,24 +23,31 @@ def viz_animation(DIVERSIFYING_PATH, NAME):
     gridobj.h = rbnP.grid.h
     gridobj.T_c = rbnP.grid.T_c
 
-    scipy.io.savemat('data/output_data/10_by_10_3_20_LANL/nondiversifying.mat', {'allstates':rbnP.states.astype(int)})
+    #scipy.io.savemat('data/output_data/10_by_10_3_20_LANL/nondiversifying.mat', {'allstates':rbnP.states.astype(int)})
 
-    arbtimesteps = 1000
-    canalyzing1 = rbnP.states[0, 0, :]
-    canalyzing1 = np.where(canalyzing1 == 0, -1, canalyzing1)
-    canalyzing2 = rbnP.states[1, 0, :]
-    canalyzing2 = np.where(canalyzing2 == 0, -1, canalyzing2)
-    plt.figure()
-    plt.plot(canalyzing1, label = "Cell 1: +1, -1")
-    plt.plot(canalyzing1.cumsum(), label= "Cell 1: cumulative")
-    plt.plot(canalyzing2, label="Cell 2: +1, -1")
-    plt.plot(canalyzing2.cumsum(), label="Cell 2: cumulative")
-    plt.title("Single canalyzing node")
-    plt.legend()
+    #arbtimesteps = 1000
+    #canalyzing1 = rbnP.states[0, 0, :]
+    #canalyzing1 = np.where(canalyzing1 == 0, -1, canalyzing1)
+    #canalyzing2 = rbnP.states[1, 0, :]
+    #canalyzing2 = np.where(canalyzing2 == 0, -1, canalyzing2)
+    #plt.figure()
+    #plt.plot(canalyzing1, label = "Cell 1: +1, -1")
+    #plt.plot(canalyzing1.cumsum(), label= "Cell 1: cumulative")
+    #plt.plot(canalyzing2, label="Cell 2: +1, -1")
+    #plt.plot(canalyzing2.cumsum(), label="Cell 2: cumulative")
+    #plt.title("Single canalyzing node")
+    #plt.legend()
     #plt.show()
 
+
+    pcolortest(rbnP.grid.numcells, rbnP.states, rbnP.n)
+
+
+    print("pcolor")
     #showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode, gridobj)
     statedistributionviz(rbnP.grid.numcells, rbnP.states, rbnP.n, perturbobj.booleanperturb, gridobj)
+    print("stop")
+
 
 def power_law(x, a, b):
     return a * np.power(x, b)
@@ -48,7 +55,7 @@ def power_law(x, a, b):
 def vizsims10by10(DIVERSIFYING_PATH, CUM_PATH):
     
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-                "varKLD", "t_final", "J", "h", "T_c"]
+                "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
     df1 = pd.DataFrame(columns=data_col
                        )
     df2 = pd.DataFrame(columns=data_col)
@@ -125,7 +132,7 @@ def vizsims10by10(DIVERSIFYING_PATH, CUM_PATH):
 
 def vizsimstissues(TISSUE_PATH, num):
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-                "varKLD", "t_final", "J", "h", "T_c"]
+                "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
     df1 = pd.DataFrame(columns=data_col)
 
     for i in range(1, 6, 1):
@@ -173,7 +180,7 @@ def vizsimstissues(TISSUE_PATH, num):
 
 def vizsimstissues2(TISSUE_PATH, num, title):
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-                "varKLD", "t_final", "J", "h", "T_c"]
+                "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
     df1 = pd.DataFrame(columns=data_col)
 
     for i in range(1, 6, 1):
@@ -304,7 +311,7 @@ def main():
     #fh10, fh10 = vizsimstissues2(CUM_fh_PATH, 10, "10by10 fixed interaction h")
 
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
-                "varKLD", "t_final", "J", "h", "T_c"]
+                "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
     df1 = pd.DataFrame(columns=data_col)
 
     for i in range(1, 6, 1):
@@ -363,12 +370,14 @@ def main2():
     WORKING_PATH = os.getcwd()
     #SAVE_PATH = WORKING_PATH + "/data/output_data/10_by_10_02_04/check_sims"
     SAVE_PATH = WORKING_PATH + "/data/output_data/tbd"
-    #viz_animation(SAVE_PATH, "s2_0_1_2_0.55_0.1_0.0.pkl")
-    viz_animation(SAVE_PATH, "s2_0_1_2_0.5_6.1_6.0.pkl")
-    #viz_animation(SAVE_PATH, "s1_2_3_2_0.5_0.1_0.1.pkl")
-    viz_animation(SAVE_PATH, "4_by_4_s2_0_1_2_0.55_0.2_0.0.pkl")
-    #viz_animation(SAVE_PATH, "10_by_10_s2_0_1_2_0.55_0.2_0.0.pkl")
-    #
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_0.0_4.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_0.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_3.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_4.0_3.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_5.0_3.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_3.0.pkl")
+    viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_6.0.pkl")
+
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
                 "varKLD", "t_final", "J", "T_c", "h"]
     df1 = pd.DataFrame(columns=data_col)

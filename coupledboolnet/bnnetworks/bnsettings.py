@@ -8,9 +8,9 @@ import numpy as np
 
 class ImportSavedData:
     path = os.getcwd()
-    networkpath = path + "/data/example_diversifying/"
+    networkpath = path + "/data/example_diversifying2/"
     #networkpath = path + "/data/example1/"
-    importsaveddata = False
+    #importsaveddata = False
     importsaveddata = True
 
     if importsaveddata is True:
@@ -41,7 +41,7 @@ class PerturbationInputVariabale:
         "perturbation type needs to be one of probabilistic, periodic, stochastic, none"
 
     if (perturbtype == "probabilistic"):
-        booleanperturb = 0.2
+        booleanperturb = 0.01
         commnodeprob = 0.0
 
         if (commnodeprob > 0):
@@ -59,7 +59,7 @@ class PerturbationInputVariabale:
 
     elif (perturbtype == "stochastic"):
         stochastictype = "Ising"
-        booleanperturb = .02
+        booleanperturb = .01
         defaultnode = 0
         outputnode = 0
 
@@ -91,8 +91,8 @@ class GridVariables:
             """
 
             J = -1 # Antiferromagnetic
-            h = 2
-            T_c = 3 # 2.269 is critical   `
+            h = .001
+            T_c = .001 # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 
             initconfig = "antiferromagnetic"

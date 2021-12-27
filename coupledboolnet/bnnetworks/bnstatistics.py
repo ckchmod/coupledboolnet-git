@@ -68,3 +68,28 @@ def kldpairwise(ssD):
 def lyapunovexp(k, p):
     lambdalyap = np.log(2*k*p*(1-p))
     return lambdalyap
+
+def magnetization(states):
+    canalyzing1 = states[:, 0, :]
+    canalyzing1 = np.where(canalyzing1 == 0, -1, canalyzing1)
+    mag = np.zeros(canalyzing1.shape[1])
+    for t in range(mag.shape[0]):
+        mag[t] = np.sum(canalyzing1[:, t])
+
+    mag = np.sum(mag)/canalyzing1.shape[0]/canalyzing1.shape[1]
+    return mag
+
+def hellingerdistance(P,Q):
+    return (1/np.sqrt(2)*np.sum((np.sqrt(P)-np.sqrt(Q))*(np.sqrt(P)-np.sqrt(Q))))
+
+def hellingerpairwise(ssD):
+    pairwise = np.array(list(combinations([i for i in range(ssD.shape[0])], 2)))
+    hellMatrix = np.zeros(pairwise.shape[0])
+
+    for i in range(len(hellMatrix)):
+        P = ssD[pairwise[i, 0], :]
+        Q = ssD[pairwise[i, 1], :]
+        hellMatrix[i] = hellingerdistance(P, Q)
+
+    return (hellMatrix)
+

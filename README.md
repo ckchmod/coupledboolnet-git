@@ -1,25 +1,30 @@
-## Coupled Boolean Networks To Do List:
+# Coupled Boolean Networks:
 
-High Priority:
+`coupledboolnet` allows users to create and simulate single or multicellular-coupled Boolean networks with different interaction rules (lienar threshold or Ising model).   
 
-	PBN Test
-		Different Network
-		Just try out some different shit
 
-    Use the myeloid progenitor network
+## How to use
 
-	CPBN Test
-		Different network
+Users supply connectivty value ($k$) from command line:
 
-	2-D tissue
-		2 cells
-		4 cells
-		8 cells
-		
-    Come back and double check interaciton ``h''
-     
-    Run on Kamiak: Done
-    
-    Visualization script written
-    
-    Run multiple tissues now against the order parameter    
+    python -m coupleboolnet [k-value]
+
+By default, if `importsavedata = True`, `coupledboolnet` searches specfied directory path under `coupledboolnet/data/` directory.  
+
+Otherwise, the default setting is a tissue of 10-by-10 cells with 10-genes with perturbation, and Ising interaction.
+
+
+## Contents 
+
+- Edit `bnsettings.py` for extensive paramter of control with boolean networks. Options include perturbation, temperature $T$, interaction strength $h$. 
+
+- Run methods from `runanalysis2.py` separately for visualization tools of the simulation outcomes.
+
+- `coupledboolent/kamiak` contains scripts for running on SLURM supported clusters.
+
+
+## Work to be done:
+
+1. Run on Kamiak: Done
+2. Visualization script: Done
+3. Python Docstring

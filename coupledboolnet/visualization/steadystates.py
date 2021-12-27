@@ -125,7 +125,6 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
                 im3 = ax3.imshow(tempstates3, animated=True)
 
                 ax4.cla()
-                #states[:,:,:t+1]
                 tempstates4 = bitstoints(states[:, :, t]).reshape(numcellline, numcellline)
                 ax4.imshow(tempstates4, animated=True)
                 ax4.set_title("Average Network")
@@ -136,7 +135,7 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
                 plt.pause(.01)
                 ani = animation.ArtistAnimation(fig, ims, blit=False)
 
-            #ani.save('ising-model.mp4')
+            ani.save('ising-model.mp4')
 
 def viewkldbar(kldmatrix):
     plt.bar(range(len(kldmatrix)), kldmatrix)

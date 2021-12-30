@@ -25,29 +25,9 @@ def viz_animation(DIVERSIFYING_PATH, NAME):
 
     #scipy.io.savemat('data/output_data/10_by_10_3_20_LANL/nondiversifying.mat', {'allstates':rbnP.states.astype(int)})
 
-    #arbtimesteps = 1000
-    #canalyzing1 = rbnP.states[0, 0, :]
-    #canalyzing1 = np.where(canalyzing1 == 0, -1, canalyzing1)
-    #canalyzing2 = rbnP.states[1, 0, :]
-    #canalyzing2 = np.where(canalyzing2 == 0, -1, canalyzing2)
-    #plt.figure()
-    #plt.plot(canalyzing1, label = "Cell 1: +1, -1")
-    #plt.plot(canalyzing1.cumsum(), label= "Cell 1: cumulative")
-    #plt.plot(canalyzing2, label="Cell 2: +1, -1")
-    #plt.plot(canalyzing2.cumsum(), label="Cell 2: cumulative")
-    #plt.title("Single canalyzing node")
-    #plt.legend()
-    #plt.show()
-
-
     pcolortest(rbnP.grid.numcells, rbnP.states, rbnP.n)
-
-
-    print("pcolor")
-    #showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode, gridobj)
+    showanimation(rbnP.grid.numcells , rbnP.states, rbnP.n, perturbobj.defaultnode, gridobj)
     statedistributionviz(rbnP.grid.numcells, rbnP.states, rbnP.n, perturbobj.booleanperturb, gridobj)
-    print("stop")
-
 
 def power_law(x, a, b):
     return a * np.power(x, b)
@@ -56,8 +36,7 @@ def vizsims10by10(DIVERSIFYING_PATH, CUM_PATH):
     
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
                 "varKLD", "t_final", "J", "T_c", "h", "mag", "hell"]
-    df1 = pd.DataFrame(columns=data_col
-                       )
+    df1 = pd.DataFrame(columns=data_col)
     df2 = pd.DataFrame(columns=data_col)
 
     for i in range(1, 6, 1):
@@ -331,39 +310,6 @@ def main():
     ax3 = fig.add_subplot(1, 3, 3, projection='3d')
     ax3.scatter(df1.T_c, df1.h, df1.meanKLD, c='r', marker='o')
 
-
-
-
-    #f10, f10 = vizsimstissues2(CUM_PATH, 10, "10by10 total")
-
-
-    #gridsizes =np.array([4,16,64,100])
-    #Tdat = np.array([T02, T04, T08, T10], dtype=float)
-    #hdat =  np.array([h02, h04, h08, h10], dtype=float)
-
-
-    #print(Tdat)
-    #print(hdat)
-
-    # fig, (ax1, ax2) = plt.subplots(1, 2)
-    # plt.suptitle("Mutliple Tissues Power Law?", fontsize=20)
-    #
-    # ax1.scatter(gridsizes, Tdat[:,0], marker='o')
-    # pars, cov = curve_fit(f=power_law, xdata=gridsizes, ydata=Tdat[:,0], p0=[0, 0], bounds=(-np.inf, np.inf))
-    # x_line = arange(min(gridsizes), max(gridsizes),1)
-    # a, b = pars
-    # y_line = power_law(x_line, a, b)
-    # ax1.plot(x_line, y_line, '--', color='red')
-    # ax1.set_xlabel("Tissue Size"), ax1.set_ylabel("Critical Temperature")
-    #
-    # ax2.scatter(gridsizes, hdat[:,0], marker='o'), self
-    # pars, cov = curve_fit(f=power_law, xdata=gridsizes, ydata=hdat[:,0], p0=[0, 0], bounds=(-np.inf, np.inf))
-    # x_line = arange(min(gridsizes), max(gridsizes),1)
-    # a, b = pars
-    # y_line = power_law(x_line, a, b)
-    # ax2.plot(x_line, y_line, '--', color='red')
-    # ax2.set_xlabel("Tissue Size"), ax2.set_ylabel("Critical h")
-
     plt.show()
 
 def main2():
@@ -372,11 +318,11 @@ def main2():
     SAVE_PATH = WORKING_PATH + "/data/output_data/tbd"
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_0.0_4.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_0.0.pkl")
-    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_3.0.pkl")
+    viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_3.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_4.0_3.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_5.0_3.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_3.0.pkl")
-    viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_6.0.pkl")
+    #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_6.0.pkl")
 
     data_col = ["indexcount", "simcount", "k", "p", "Lyapunov", "meanKLD", "medianKLD",
                 "varKLD", "t_final", "J", "T_c", "h"]
@@ -391,16 +337,3 @@ def main2():
     vizdata(df1, '10')
 
 main2()
-
-
-# Question: What kind of analyses can be done on top of this?
-# For paper
-# 0) prbabilstic canalyzing function
-# 1) find critical h_c and T_c (interporlation) and number of cells
-# order parameter should be proportional to
-# universitality class.
-
-# 4x4, 8x8 Critical numbers (as a function of number of cells)
-
-# Future
-# with critical parametrs, develop Ladelle model(?)

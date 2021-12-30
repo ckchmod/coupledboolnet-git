@@ -1,17 +1,27 @@
 """
-Standalone Ising Model Class
+Standalone Module for simulating the Ising model
 """
 import numpy as np
-
 
 class Ising():
 
     def __init__(self, isingvariables, numsteps, initconfig=None):
         """
-        Ising Method
+        Class used to instantiate the Ising model. This object can take on a grid/lattice of pre-configured spins or
+        instantiate a random configuration. One can analyze the magnetization of the simulation, or use methods in conjunction
+        with bn.py to form coupled Boolean networks by the Ising model. Supply Ising parameters in the GridVariables Class.
 
-        Parameters
+        ...
+        Attributes
         ----------
+        isingvariables : obj
+            GridVariables Class
+
+        numsteps : int
+            number of timesteps for running the Ising model
+
+        initconfig : float
+            optional for supplying initial configuration of spins of the lattice
         """
         assert (isingvariables.numcells > 1), "Number of cells needs to be > 1"
 
@@ -54,7 +64,6 @@ class Ising():
         mc_j = np.random.randint(self.initconfig.shape[1])
         N, S, W, E = boundaries(mc_i, mc_j, self.initconfig)
 
-        # dE = energycomputation(self.initconfig[mc_i, mc_j], N, S, W, E, self.J, self.h, self.hf)
         s = self.J * self.initconfig[mc_i, mc_j]
         nb = (self.initconfig[S, mc_j] + self.initconfig[N, mc_j] + self.initconfig[mc_i, E] + self.initconfig[mc_i, W])
 
@@ -115,9 +124,6 @@ def isingsingle(initconfig, J, T_c, h, f_NN):
     NN_new = -J * -initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]*s
     NN_old = -J * initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]*s
 
-    #NN_new = -J * -initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
-    #NN_old = -J * initconfig[mc_i, mc_j] * nb - h*f_NN[mc_i, mc_j]
-
     dE = NN_new - NN_old
 
     if dE < 0:
@@ -130,24 +136,34 @@ def isingsingle(initconfig, J, T_c, h, f_NN):
     return (initconfig)
 
 def energycomputation(i, j, initconfig, f_NN, J, T_c, h):
+    """
+    Compute the Hamiltonian of the local site
 
-    ##########
-    #N, S, W, E = boundaries(i, j, initconfig)
+    ...
 
-    #s = initconfig[i, j] # time t
-    #f_NN is the state of the interacting node at time t-1
-    #nb = (initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W])
+    Parameters
+    ----------
+     i : int
+        ith location of where to compute local energy
 
-    #NN_new = -J * -initconfig[i, j] * nb - h * f_NN[i, j] * s
-    #NN_old = -J * initconfig[i, j] * nb - h * f_NN[i, j] * s
+     j : int
+        jth location of where to compute local energy
 
-    #NN_new = -self.J * -self.initconfig[mc_i, mc_j] * nb
-    #NN_old = -self.J * self.initconfig[mc_i, mc_j] * nb
+    initconfig : ndarray
+        ndarray of spin configurations at time t
 
-    # current model
-    #N, S, W, E = boundaries(i, j, f_NN )
-    #s = f_NN[i,j]
-    #nb = f_NN[S, j] + f_NN[N, j] + f_NN[i, E] + f_NN[i, W]
+    f_NN : BOOL
+        spin value of the proposal
+
+    J : int
+        interaction constant of the Hamiltonian (+/-1)
+
+    T_c : float
+        temperature used for the Boltzmann distribution
+
+    h : float
+        strength of the external field
+    """
 
     N, S, W, E = boundaries(i, j, initconfig )
     s = f_NN[i,j] #singrunall
@@ -177,7 +193,6 @@ def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
 
     for i in range(M):
         for j in range(N):
-            #initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
             initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
 
     initconfig = np.where(initconfig == -1, False, initconfig)
@@ -200,6 +215,7 @@ def boundaries(i, j, matrix):
     S = i + 1;
     E = j + 1;
     W = j - 1;
+
     if (N == -1):
         N = matrix.shape[0] - 1
 
@@ -212,19 +228,3 @@ def boundaries(i, j, matrix):
     if (E == matrix.shape[1]):
         E = 0
     return (N, S, W, E)
-
-
-def energycomputationold(s_i, N_S_W_E, J, h_interac, h_f):
-    N_S_W_E_temp = N_S_W_E;
-    s_i_temp = s_i;
-    h_f_temp = h_f;
-
-    # s =  self.initconfig[mc_i, mc_j]
-    # nb = (self.initconfig[S,mc_j] + self.initconfig[N,mc_j] + self.initconfig[mc_i,E] + self.initconfig[mc_i,W])
-
-    # (N_S_W_E[0] + N_S_W_E_temp[1] + N_S_W_E_temp[2] + N_S_W_E_temp[3]))
-    # 2*s*nb
-
-    energy = -2 * s_i * (N_S_W_E_temp[0] + N_S_W_E_temp[1] + N_S_W_E_temp[2] + N_S_W_E_temp[3]) - 2*h_f
-    return energy
-

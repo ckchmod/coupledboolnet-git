@@ -1,5 +1,5 @@
 """
-Steady-state Distribution Visualizations
+Module for Steady-state Distribution Visualizations
 """
 from coupledboolnet.bnnetworks.bn import bitstoints,steadystates
 from coupledboolnet.bnnetworks.bnstatistics import steadystatesrobust
@@ -84,10 +84,6 @@ def pcolortest(numcells, states, numgenes):
     c=ax0.pcolor(newmatrix[:, :20], vmin=0, vmax=1)
     ax0.set_title('s3_0_1_3_0.8_6.0_6.0')
 
-    #plt.plot(newvec)
-    #plt.title('Frobenius norm 100x100 of s3_0_1_3_0.8_5.0_3.0')
-    #plt.xlabel('time snapshots')
-    #plt.ylabel('Matrix norm')
     plt.show()
 
     return(newmatrix)
@@ -132,10 +128,10 @@ def showanimation(numcells, states, numgenes, defaultnode, gridobj):
 
                 ims.append([im1, im2, im3, im4])
 
-                plt.pause(.01)
+                plt.pause(.001)
                 ani = animation.ArtistAnimation(fig, ims, blit=False)
 
-            ani.save('ising-model.mp4')
+            #ani.save('ising-model.mp4')
 
 def viewkldbar(kldmatrix):
     plt.bar(range(len(kldmatrix)), kldmatrix)

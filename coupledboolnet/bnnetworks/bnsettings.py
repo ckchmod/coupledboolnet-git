@@ -1,16 +1,13 @@
 """
-bnsettings
+Static Class for setting up Boolean networks
 """
 
 import os
 import numpy as np
 
-
 class ImportSavedData:
     path = os.getcwd()
     networkpath = path + "/data/example_diversifying2/"
-    #networkpath = path + "/data/example1/"
-    #importsaveddata = False
     importsaveddata = True
 
     if importsaveddata is True:
@@ -69,7 +66,7 @@ class PerturbationInputVariabale:
 
 class GridVariables:
     numcells = 10**2
-    dT = 10 # Timestep delta for visualizations
+    dT = 10
     kldthreshold = 0
 
     if (numcells > 1):

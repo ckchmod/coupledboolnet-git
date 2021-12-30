@@ -1,7 +1,6 @@
 """
 Boolean Network Class
 """
-
 import numpy as np
 from coupledboolnet.bnnetworks.ising import isingsingle, isingsinglefastmetropolis
 from numpy import random
@@ -10,9 +9,29 @@ class BooleanNetwork():
 
     def __init__(self, rbnobj, perturbobj, gridobj, importobj=None):
         """
-        Boolean Network Instantiation
-        Parameters
+        Class used to instantiate a Boolean Network object. The class allows one to construct a single or multicellular
+        tissue of networks. The object currently allows three forms of communication: linear threshold, Ising model, independent.
+        Supply PerturbationInputVariable Class and GridVariables Class.
+        ...
+        Attributes
         ----------
+        n : int
+            number of cells on the tissue.
+
+        k : int
+            connectivity of the network
+
+        p : float
+            the bias of the network
+
+        booleanperturbobj : obj
+            PerturbationInputVariable Class
+
+        grid : obj
+            GridVariables Class
+
+        importobj : obj
+            If specified, import a saved Boolean network from /data/ directory
         """
         self.n = rbnobj.n
         self.k = rbnobj.k
@@ -49,15 +68,7 @@ class BooleanNetwork():
             self.initconfig = self.initconfig.astype(bool)
             self.initstate[:,0] = self.initconfig
 
-            # self.initstate = random.randint(2, size=(self.grid.numcells, self.n), dtype=bool)
-            # a = np.zeros((self.grid.numcells,))
-            # a[::2] = True
-            # a[1::2] = False
-            # self.initstate[:, 0] = a
-
         if importobj.ttable is None:
-            # The bias p needs to be fixed
-            # self.ttable = random.randint(2, size=(2**k, n))
             self.ttable = np.zeros((2 ** self.k, self.n), dtype=bool)
             for i in range(2 ** self.k):
                 for j in range(self.n):
@@ -92,7 +103,14 @@ class BooleanNetwork():
 
     def bool_next_all(self, timestep, grid):
         """
-        Boolean update for all cells
+        Method for updating single or multiple Boolean networks
+        ...
+
+        Parameters
+        ----------
+        timestep : int
+            the number of timesteps to run the simulation
+
         """
         numcells = self.grid.numcells
 
@@ -100,10 +118,6 @@ class BooleanNetwork():
 
             self.states = np.zeros((timestep + 1, numcells * self.n), dtype=bool)
             self.states[0, :] = self.initstate
-
-            # self.states = np.zeros((timestep+1, numcells), dtype=int)
-            # self.states[0,:] = bittoint(self.initstate)
-            # listallint = self.state_transition()
 
             if (self.booleanperturbobj.perturbtype == "probabilistic"):
                 if (self.booleanperturbobj.booleanperturb != 0):
@@ -115,8 +129,6 @@ class BooleanNetwork():
                     for t in range(1, timestep + 1):  # Might need to come back and fix this
                         for i in range(numcells):
                             self.boolean_next_state(t, i)
-                            # Needs to be switched to this line eventually.
-                            # self.states[t,:] = listallint[self.states[t-1] , 1]
 
             elif (self.booleanperturbobj.perturbtype == "periodic"):
                 pass
@@ -136,11 +148,10 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
                 else:
-                    for t in range(1, timestep + 1):  # Might need to come back and fix this
+                    for t in range(1, timestep + 1):
                         for i in range(numcells):
                             self.boolean_next_state(t, i)
-                            # Needs to be switched to this line eventually.
-                            # self.states[t,:] = listallint[self.states[t-1] , 1]
+
             elif (self.booleanperturbobj.perturbtype == "stochastic"):
                 if (self.booleanperturbobj.booleanperturb != 0):
                     for t in range(1, timestep + 1):  # Might need to come back and fix this
@@ -148,7 +159,6 @@ class BooleanNetwork():
                             self.boolean_next_state(t, i)
                             self.boolean_perturbation(t, i)
 
-                        # inputoutput same node (default) (IF ELSE STATEMENT NEEDS TO BE DELETED)
                         if(self.booleanperturbobj.defaultnode == self.booleanperturbobj.outputnode):
                             initconfig = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
@@ -157,18 +167,13 @@ class BooleanNetwork():
                             initconfig = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
 
-                        #newnodestates = isingsingle(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
-                        # nodestates is t-1 interacting node
-                        # f_NN is t interacting node
                         newnodestates = isingsinglefastmetropolis(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
 
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 
     def boolean_next_state(self, currentime, cellid):
         """
-        ***THIS METHOD IS DEPRECATED
-        Boolean next step: This needs to be replaced by like state-transition method
-
+        Boolean next step: This needs to be replaced by like state-transition method (old/deprecated)
         """
         if (self.grid.numcells == 1):
 
@@ -190,10 +195,6 @@ class BooleanNetwork():
                 tempk = len(tempvarf)
                 wiringnode = 0
 
-                # state(t, n_genes)
-                # np.zeros((timestep+1, numcells * self.n), dtype=bool)
-                # np.zeros((numcells, self.n, timestep+1)
-
                 for wire in range(len(tempvarf)):
                     wiringnode = wiringnode + 2 ** (tempk - 1 - wire) * self.states[
                         cellid, tempvarf[wire] - 1, currentime - 1]
@@ -202,7 +203,17 @@ class BooleanNetwork():
 
     def boolean_perturbation(self, currentime, cellid):
         """
-        Boolean perturbation
+        Method for handling Boolean perturbation if perturbation is allowed. The main types of of perturbation supported
+        are "probabilistic", "periodic", "stochastic."
+        ...
+
+        Parameters
+        ----------
+        currentime : int
+            the current timestep at which the perturbation is to be applied
+
+        cellid : int
+            the id of the cell of which the perturbation is to be applied
         """
 
         if (self.grid.numcells == 1):
@@ -213,9 +224,6 @@ class BooleanNetwork():
                     for i in range(self.n):
                         if (random.random() < p):
                             self.states[currentime, i] = (self.states[currentime, i] + 1) % 2
-                            # This needs to be changed
-                            # newperturbed = (inttobitlist(self.states[currentime])[i]+1)%2
-                            # self.states[currentime] = bittoint(newperturbed)
 
             elif (self.booleanperturbobj.perturbperturbtype == "singleperturb_and_no_prob"):
                 p = self.booleanperturbobj.booleanperturb
@@ -310,20 +318,18 @@ class BooleanNetwork():
         """
         Interaction Rules
         """
-
         def __init__(self, h, J):
             pass
 
 
 def inputtest(rbnobj, importedata, perturbobj, gridobj, timestep):
     """
-    Class function to test all the inputs are correct
+    Class function for testing the inputs are correct
     """
     if rbnobj.k > rbnobj.n:
         raise Exception("numberof wirings (k) should not be greater than number of genes (n)")
 
     if (rbnobj.n != len(importedata.initstate)):
-        # raise Exception("number of genes (n) should equal length of initstate")
         print("Overwritten: number of genes (n) should equal length of initstate")
         rbnobj.n = len(importedata.initstate)
 
@@ -338,9 +344,7 @@ def inputtest(rbnobj, importedata, perturbobj, gridobj, timestep):
 def inttobitlist(genes):
     nums = np.array([i for i in range(2 ** genes)], dtype=int)
     bin_nums = ((nums.reshape(-1, 1) & (2 ** np.arange(genes))) != 0).astype(int)
-
     return (np.array(bin_nums[:, ::-1]))
-
 
 def bittoint(state):
     num = 0

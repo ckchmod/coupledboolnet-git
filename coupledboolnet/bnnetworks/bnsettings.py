@@ -7,7 +7,9 @@ import numpy as np
 
 class ImportSavedData:
     path = os.getcwd()
-    networkpath = path + "/data/example_diversifying2/"
+    networkpath = path + "/coupledboolnet/data/example_diversifying3/"
+    print(networkpath)
+
     importsaveddata = True
 
     if importsaveddata is True:
@@ -26,9 +28,9 @@ class RBNVariables:
     """
     This gets overwritten, if importsaveddata is different (True)
     """
-    n = 10
+    n = 6
     k = 2
-    p = .55
+    p = .5
 
 
 class PerturbationInputVariabale:
@@ -89,6 +91,7 @@ class GridVariables:
 
             J = -1 # Antiferromagnetic
             h = .001
+            h0 = 0
             T_c = .001 # 2.269 is critical   `
             kb = 8.617 * (10 ** -5)  # eV/K
 

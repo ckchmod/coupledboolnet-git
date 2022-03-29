@@ -136,8 +136,9 @@ class BooleanNetwork():
                 pass
 
         elif (numcells > 1):
-
+            print(numcells)
             dimsize = int(np.sqrt(numcells))
+            print(dimsize)
             self.states = np.zeros((numcells, self.n, timestep + 1), dtype=bool)
             self.states[:, :, 0] = self.initstate
 
@@ -167,7 +168,7 @@ class BooleanNetwork():
                             initconfig = self.states[:, self.booleanperturbobj.outputnode, t-1].reshape(dimsize, dimsize)
                             f_NN = self.states[:, self.booleanperturbobj.defaultnode, t].reshape(dimsize, dimsize)
 
-                        newnodestates = isingsinglefastmetropolis(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN)
+                        newnodestates = isingsinglefastmetropolis(initconfig, self.grid.J, self.grid.T_c, self.grid.h, f_NN, self.grid.h0)
 
                         self.states[:, self.booleanperturbobj.defaultnode, t] = newnodestates.reshape(numcells)
 

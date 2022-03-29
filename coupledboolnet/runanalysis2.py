@@ -318,7 +318,7 @@ def main2():
     SAVE_PATH = WORKING_PATH + "/data/output_data/tbd"
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_0.0_4.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_0.0.pkl")
-    viz_animation(SAVE_PATH, "s3_0_1_3_0.8_3.0_3.0.pkl")
+    viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_6.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_4.0_3.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_5.0_3.0.pkl")
     #viz_animation(SAVE_PATH, "s3_0_1_3_0.8_6.0_3.0.pkl")

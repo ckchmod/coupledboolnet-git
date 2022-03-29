@@ -182,20 +182,44 @@ def energycomputation(i, j, initconfig, f_NN, J, T_c, h):
 
     return initconfig
 
-def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN):
+def deltaf(a,b):
+    pass
+
+def pottscomputation(i, j, initconfig, f_NN, J, T_c, h, h0):
+
+    N, S, W, E = boundaries(i, j, initconfig )
+    s = f_NN[i,j] #singrunall
+    nb = initconfig[S, j] + initconfig[N, j] + initconfig[i, E] + initconfig[i, W]
+    xstar = 1
+
+    NN_new = J * s * nb + h * initconfig[i, j] * s + h0 * s * xstar
+    #NN_old = -J * s * nb - h * initconfig[i,j] * s
+    NN_old = -NN_new
+    dE = NN_new - NN_old
+
+    if dE < 0:
+        s = ~s
+    elif np.random.rand() < np.exp((-dE) / T_c):
+        s = ~s
+    initconfig[i, j] = s
+
+    return initconfig
+
+def isingsinglefastmetropolis(initconfig, J, T_c, h, f_NN, h0=0):
     # current model initconfig (t-1 interacting node)
     # f_nn (t current node)
-    initconfig = np.where(initconfig == 0, -1, initconfig)
-    f_NN = np.where(f_NN == 0, -1, f_NN)
+    #initconfig = np.where(initconfig == 0, -1, initconfig)
+    #f_NN = np.where(f_NN == 0, -1, f_NN)
 
     M = f_NN.shape[0]
     N = f_NN.shape[1]
 
     for i in range(M):
         for j in range(N):
-            initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h)
+            #initconfig = energycomputation(i, j, initconfig, f_NN, J, T_c, h, h0)
+            initconfig = pottscomputation(i, j, initconfig, f_NN, J, T_c, h,h0)
 
-    initconfig = np.where(initconfig == -1, False, initconfig)
+    #initconfig = np.where(initconfig == -1, False, initconfig)
     initconfig = initconfig.astype(bool)
 
     return initconfig

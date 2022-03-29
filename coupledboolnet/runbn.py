@@ -145,7 +145,7 @@ def main(sys_arg):
 
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     run_multi_sim(sys_arg, rbnobj, perturbobj, gridobj, importeddata, timestep, datasave, showviz)
-    #isingcheck(timestep)
+    isingcheck(timestep)
     print("Simulation Finished.")
 
 #main()
